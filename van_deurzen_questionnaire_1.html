@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowing Yourself — The Four Worlds</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: #F7F5F0;
+    color: #1C1C1C;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: #1C1C1C;
+    color: #F7F5F0;
+    padding: 32px 40px;
+    border-bottom: 4px solid #7B6FA0;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .header p {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #A8A8A8;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+  }
+
+  .instructions {
+    background: #EDE8F5;
+    border-left: 4px solid #7B6FA0;
+    padding: 20px 40px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #3C3C3C;
+  }
+
+  .scale-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 40px;
+    background: #1C1C1C;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    color: #F7F5F0;
+  }
+
+  .scale-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .scale-legend .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .progress-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    color: #888;
+    padding: 12px 40px 0;
+    text-align: right;
+  }
+
+  .progress-bar-wrap {
+    background: #E0DCF0;
+    height: 4px;
+    margin: 8px 40px 24px;
+    border-radius: 2px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: #7B6FA0;
+    border-radius: 2px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  .questions-container {
+    padding: 8px 40px 24px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .question-block {
+    background: white;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    padding: 24px 28px;
+    border: 1px solid #E0DCF0;
+    transition: border-color 0.2s;
+  }
+
+  .question-block.answered {
+    border-color: #7B6FA0;
+  }
+
+  .question-number {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: #7B6FA0;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .question-text {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #1C1C1C;
+    margin-bottom: 20px;
+  }
+
+  .likert-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .likert-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.72rem;
+    color: #888;
+    flex: 0 0 100px;
+    line-height: 1.3;
+  }
+
+  .likert-label.right {
+    text-align: right;
+  }
+
+  .likert-options {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .likert-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .likert-option input[type="radio"] {
+    display: none;
+  }
+
+  .likert-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #CCCAE0;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.8rem;
+    color: #888;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .likert-option:hover .likert-circle {
+    border-color: #7B6FA0;
+    color: #7B6FA0;
+  }
+
+  .likert-option input[type="radio"]:checked + .likert-circle {
+    background: #7B6FA0;
+    border-color: #7B6FA0;
+    color: white;
+    font-weight: bold;
+  }
+
+  .submit-area {
+    padding: 0 40px 60px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .submit-btn {
+    background: #1C1C1C;
+    color: #F7F5F0;
+    border: none;
+    padding: 16px 40px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s;
+    width: 100%;
+  }
+
+  .submit-btn:hover { background: #7B6FA0; }
+
+  .submit-btn:disabled {
+    background: #CCCAE0;
+    cursor: not-allowed;
+    color: #888;
+  }
+
+  .results-container {
+    display: none;
+    padding: 40px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .results-title {
+    font-size: 1.3rem;
+    font-weight: normal;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .results-subtitle {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 36px;
+    line-height: 1.7;
+  }
+
+  .dimension-result {
+    background: white;
+    border: 1px solid #E0DCF0;
+    border-radius: 2px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .dim-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .dim-name {
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .dim-german {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    color: #7B6FA0;
+    margin-left: 10px;
+  }
+
+  .dim-score {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.4rem;
+    color: #7B6FA0;
+    font-weight: bold;
+  }
+
+  .dim-score span {
+    font-size: 0.8rem;
+    color: #AAA;
+    font-weight: normal;
+  }
+
+  .score-bar-wrap {
+    background: #F0EEF8;
+    height: 8px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+
+  .score-bar {
+    height: 8px;
+    background: #7B6FA0;
+    border-radius: 4px;
+    transition: width 0.8s ease;
+  }
+
+  .dim-reflection {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #444;
+  }
+
+  .discussion-prompts {
+    background: #EDE8F5;
+    border-left: 4px solid #7B6FA0;
+    padding: 24px 28px;
+    margin-top: 32px;
+    border-radius: 2px;
+  }
+
+  .discussion-prompts h3 {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7B6FA0;
+    margin-bottom: 14px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .discussion-prompts ul { list-style: none; }
+
+  .discussion-prompts ul li {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.87rem;
+    line-height: 1.65;
+    color: #333;
+    padding: 8px 0;
+    border-bottom: 1px solid #D8D0F0;
+  }
+
+  .discussion-prompts ul li:last-child { border-bottom: none; }
+  .discussion-prompts ul li::before { content: "→  "; color: #7B6FA0; }
+
+  .restart-btn {
+    margin-top: 12px;
+    background: transparent;
+    border: 2px solid #1C1C1C;
+    color: #1C1C1C;
+    padding: 14px 36px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .restart-btn:hover { background: #1C1C1C; color: #F7F5F0; }
+
+  .save-btn {
+    margin-top: 28px;
+    background: #7B6FA0;
+    border: none;
+    color: #F7F5F0;
+    padding: 16px 36px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .save-btn:hover { background: #5A4E80; }
+
+  .save-instructions {
+    margin-top: 16px;
+    background: #F0EEF8;
+    border: 1px solid #D8D0F0;
+    border-radius: 2px;
+    padding: 18px 20px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #444;
+    display: none;
+  }
+
+  .save-instructions strong {
+    color: #1C1C1C;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .save-instructions ol {
+    padding-left: 18px;
+    margin-top: 6px;
+  }
+
+  .save-instructions ol li { margin-bottom: 4px; }
+
+  @media print {
+    .submit-area, .restart-btn, .save-btn, .save-instructions,
+    .progress-bar-wrap, .progress-label { display: none; }
+    body { background: white; }
+    .header { background: #1C1C1C !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .score-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Knowing Yourself — The Four Worlds</h1>
+  <p>A reflective questionnaire based on Emmy van Deurzen's dimensions of existence</p>
+</div>
+
+<div class="instructions">
+  Read each statement carefully and respond as honestly as you can — there are no right or wrong answers.
+  Work through the questionnaire without pausing too long on any single item.
+  Your first instinct is usually the most truthful one.
+</div>
+
+<div class="scale-legend">
+  <span><span class="dot" style="background:#D0CCE8"></span> 1 — Strongly disagree</span>
+  <span><span class="dot" style="background:#B0ABD8"></span> 2 — Disagree</span>
+  <span><span class="dot" style="background:#9087C0"></span> 3 — Neither agree nor disagree</span>
+  <span><span class="dot" style="background:#7B6FA0"></span> 4 — Agree</span>
+  <span><span class="dot" style="background:#5A4E80"></span> 5 — Strongly agree</span>
+</div>
+
+<div class="progress-label" id="progressLabel">0 of 20 answered</div>
+<div class="progress-bar-wrap">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div class="questions-container" id="questionsContainer"></div>
+
+<div class="submit-area">
+  <button class="submit-btn" id="submitBtn" disabled onclick="showResults()">
+    View My Reflection Profile
+  </button>
+</div>
+
+<div class="results-container" id="resultsContainer"></div>
+
+<script>
+const questions = [
+  { id: 1,  dim: 'M', text: "I feel a genuine sense of belonging in the communities and groups I am part of." },
+  { id: 2,  dim: 'E', text: "I have a clear and settled sense of who I am, even when circumstances change around me." },
+  { id: 3,  dim: 'U', text: "My life is oriented around values or commitments that feel truly important to me." },
+  { id: 4,  dim: 'P', text: "I am comfortable in and attentive to my physical self — my body, my energy, my health." },
+  { id: 5,  dim: 'E', text: "I am aware of the gap, if any, between how others see me and how I actually see myself." },
+  { id: 6,  dim: 'U', text: "I can hold on to a sense of meaning or purpose even in the face of difficulty or loss." },
+  { id: 7,  dim: 'M', reverse: true, text: "I am aware that in many of my professional relationships I am playing a part rather than being fully myself." },
+  { id: 8,  dim: 'P', text: "I pay close attention to what my body tells me — about stress, fatigue, or discomfort." },
+  { id: 9,  dim: 'U', text: "I have a relationship — whether spiritual, philosophical, or aesthetic — to something larger than myself." },
+  { id: 10, dim: 'E', text: "I notice when I am living according to others' expectations rather than my own." },
+  { id: 11, dim: 'M', text: "I find it possible to be honest and vulnerable in at least some of my close relationships." },
+  { id: 12, dim: 'P', text: "I am at ease with the fact of my own mortality and the limits of physical existence." },
+  { id: 13, dim: 'E', text: "I have a sense of my own strengths and blind spots that feels honest rather than defensive." },
+  { id: 14, dim: 'M', text: "I am aware of the ways in which my social and cultural context has shaped who I am." },
+  { id: 15, dim: 'U', reverse: true, text: "When I face questions about what ultimately matters or what my life is for, I find them more unsettling than clarifying." },
+  { id: 16, dim: 'P', reverse: true, text: "If I am honest, my physical wellbeing tends to come last — after the demands of work and the needs of others." },
+  { id: 17, dim: 'M', text: "I am able to set appropriate limits in my relationships without significant guilt or anxiety." },
+  { id: 18, dim: 'E', text: "I can sit with uncomfortable feelings or truths about myself without quickly pushing them away." },
+  { id: 19, dim: 'U', text: "My daily life and my deeper values feel broadly in alignment rather than in tension with each other." },
+  { id: 20, dim: 'P', text: "I have found ways of accepting the aspects of my physical existence that I cannot change." },
+];
+
+const dimensions = {
+  U: {
+    name: "Spiritual World",
+    german: "Überwelt",
+    description: "This dimension concerns your relationship to meaning, values, and what transcends the everyday — whether philosophical, aesthetic, or spiritual. Higher scores suggest a stable orientation to purpose and the capacity to hold uncertainty without collapse. Lower scores may point to an unexamined or unsettled relationship with what matters most — a dimension worth turning toward."
+  },
+  P: {
+    name: "Physical World",
+    german: "Umwelt",
+    description: "This dimension concerns your relationship to your body, your mortality, and the natural conditions of existence. Higher scores suggest attentiveness and a degree of acceptance of what cannot be changed. Lower scores may indicate that the body is neglected, feared, or treated as a mere instrument — a signal that this dimension of existence may be calling for more honest attention."
+  },
+  M: {
+    name: "Social World",
+    german: "Mitwelt",
+    description: "This dimension concerns your relationship to others — belonging, connection, culture, and the social fabric of your life. Higher scores suggest genuine engagement and the capacity for authentic relating. Lower scores may point to isolation, role-performance, or difficulty moving from the social surface to something more real."
+  },
+  E: {
+    name: "Personal World",
+    german: "Eigenwelt",
+    description: "This dimension concerns your relationship to yourself — self-knowledge, identity, and the quality of your inner life. Higher scores suggest honest and stable self-awareness. Lower scores may indicate self-deception, a fragile sense of identity, or difficulty tolerating what is found on the inside — an invitation to look more carefully, and more kindly."
+  }
+};
+
+let answers = {};
+
+function buildQuestions() {
+  const container = document.getElementById('questionsContainer');
+  questions.forEach((q, idx) => {
+    const block = document.createElement('div');
+    block.className = 'question-block';
+    block.id = 'block-' + q.id;
+
+    const numLabel = document.createElement('div');
+    numLabel.className = 'question-number';
+    numLabel.textContent = 'Statement ' + String(idx + 1).padStart(2, '0');
+
+    const text = document.createElement('div');
+    text.className = 'question-text';
+    text.textContent = q.text;
+
+    const row = document.createElement('div');
+    row.className = 'likert-row';
+
+    const leftLabel = document.createElement('div');
+    leftLabel.className = 'likert-label';
+    leftLabel.textContent = 'Strongly disagree';
+
+    const rightLabel = document.createElement('div');
+    rightLabel.className = 'likert-label right';
+    rightLabel.textContent = 'Strongly agree';
+
+    const options = document.createElement('div');
+    options.className = 'likert-options';
+
+    for (let v = 1; v <= 5; v++) {
+      const label = document.createElement('label');
+      label.className = 'likert-option';
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'q' + q.id;
+      input.value = v;
+      input.addEventListener('change', (function(qId, val, b) {
+        return function() { handleAnswer(qId, val, b); };
+      })(q.id, v, block));
+
+      const circle = document.createElement('div');
+      circle.className = 'likert-circle';
+      circle.textContent = v;
+
+      label.appendChild(input);
+      label.appendChild(circle);
+      options.appendChild(label);
+    }
+
+    row.appendChild(leftLabel);
+    row.appendChild(options);
+    row.appendChild(rightLabel);
+
+    block.appendChild(numLabel);
+    block.appendChild(text);
+    block.appendChild(row);
+    container.appendChild(block);
+  });
+}
+
+function handleAnswer(qId, value, block) {
+  answers[qId] = value;
+  block.classList.add('answered');
+  updateProgress();
+}
+
+function updateProgress() {
+  const count = Object.keys(answers).length;
+  const pct = (count / 20) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = count + ' of 20 answered';
+  document.getElementById('submitBtn').disabled = count < 20;
+}
+
+function showResults() {
+  document.getElementById('questionsContainer').style.display = 'none';
+  document.querySelector('.submit-area').style.display = 'none';
+  document.querySelector('.progress-bar-wrap').style.display = 'none';
+  document.querySelector('.progress-label').style.display = 'none';
+  document.querySelector('.instructions').style.display = 'none';
+  document.querySelector('.scale-legend').style.display = 'none';
+
+  const scores = { U: 0, P: 0, M: 0, E: 0 };
+  questions.forEach(function(q) {
+    var raw = answers[q.id] || 0;
+    var scored = q.reverse ? (6 - raw) : raw;
+    scores[q.dim] += scored;
+  });
+
+  const container = document.getElementById('resultsContainer');
+  container.style.display = 'block';
+
+  const title = document.createElement('div');
+  title.className = 'results-title';
+  title.textContent = 'Your Reflection Profile';
+  container.appendChild(title);
+
+  const subtitle = document.createElement('div');
+  subtitle.className = 'results-subtitle';
+  subtitle.textContent = 'The four scores below reflect the texture of your current relationship to each dimension of existence, as van Deurzen describes them. These are not diagnostic categories — they are invitations to inquiry. A lower score in any dimension is not a failing; it is a signal of where honest attention might fruitfully turn.';
+  container.appendChild(subtitle);
+
+  var dimOrder = ['M', 'E', 'U', 'P'];
+  dimOrder.forEach(function(key) {
+    const dim = dimensions[key];
+    const score = scores[key];
+    const pct = ((score - 5) / 20) * 100;
+
+    const block = document.createElement('div');
+    block.className = 'dimension-result';
+
+    const header = document.createElement('div');
+    header.className = 'dim-header';
+
+    const nameWrap = document.createElement('div');
+    const nameEl = document.createElement('span');
+    nameEl.className = 'dim-name';
+    nameEl.textContent = dim.name;
+    const germanEl = document.createElement('span');
+    germanEl.className = 'dim-german';
+    germanEl.textContent = dim.german;
+    nameWrap.appendChild(nameEl);
+    nameWrap.appendChild(germanEl);
+
+    const scoreEl = document.createElement('div');
+    scoreEl.className = 'dim-score';
+    scoreEl.innerHTML = score + ' <span>/ 25</span>';
+
+    header.appendChild(nameWrap);
+    header.appendChild(scoreEl);
+
+    const barWrap = document.createElement('div');
+    barWrap.className = 'score-bar-wrap';
+    const bar = document.createElement('div');
+    bar.className = 'score-bar';
+    bar.style.width = '0%';
+    bar.setAttribute('data-width', pct + '%');
+    barWrap.appendChild(bar);
+
+    const reflection = document.createElement('div');
+    reflection.className = 'dim-reflection';
+    reflection.textContent = dim.description;
+
+    block.appendChild(header);
+    block.appendChild(barWrap);
+    block.appendChild(reflection);
+    container.appendChild(block);
+  });
+
+  setTimeout(function() {
+    document.querySelectorAll('.score-bar').forEach(function(bar) {
+      bar.style.width = bar.getAttribute('data-width');
+    });
+  }, 150);
+
+  const prompts = document.createElement('div');
+  prompts.className = 'discussion-prompts';
+  prompts.innerHTML = '<h3>Pair &amp; Share — Discussion Prompts</h3><ul>' +
+    '<li>Which dimension felt most alive or settled as you answered? What does that tell you?</li>' +
+    '<li>Which dimension felt most uncomfortable or unfamiliar to reflect on? Where do you think that discomfort comes from?</li>' +
+    '<li>Is there a tension between two of your dimensions — where one feels strong and another feels neglected?</li>' +
+    '<li>What would it mean to give more honest attention to the dimension you have most avoided?</li>' +
+    '<li>How does your score profile reflect who you are right now, versus the person you are trying to become?</li>' +
+    '</ul>';
+  container.appendChild(prompts);
+
+  // Save / screenshot section
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'save-btn';
+  saveBtn.textContent = '📋  Save My Results';
+  container.appendChild(saveBtn);
+
+  const saveInstructions = document.createElement('div');
+  saveInstructions.className = 'save-instructions';
+
+  // Detect device type
+  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var isAndroid = /Android/i.test(navigator.userAgent);
+
+  var deviceTitle, deviceSteps;
+
+  if (isIOS) {
+    deviceTitle = 'On iPhone or iPad';
+    deviceSteps = [
+      'Press the side button and volume-up button at the same time (iPhone X and later), or the home button and side button together (older iPhones).',
+      'A thumbnail appears in the bottom-left corner — tap it to view and annotate if you wish.',
+      'The screenshot saves automatically to your Photos app.',
+      'You can also tap Share (the box with an upward arrow) and email it to yourself or your coach.'
+    ];
+  } else if (isAndroid) {
+    deviceTitle = 'On Android';
+    deviceSteps = [
+      'Hold the power button and volume-down button simultaneously for one to two seconds.',
+      'A screenshot notification appears — tap it to view or share.',
+      'The image saves to your Photos or Gallery app.',
+      'Use the Share option to email it to yourself or your coach directly.'
+    ];
+  } else {
+    deviceTitle = 'On a laptop or desktop';
+    deviceSteps = [
+      'Use your browser\'s Print function (Ctrl+P on Windows, Cmd+P on Mac) and choose "Save as PDF."',
+      'Save the PDF to your device or cloud storage.',
+      'Alternatively, take a screenshot: on Mac use Cmd+Shift+4 to select an area; on Windows use the Snipping Tool or Win+Shift+S.'
+    ];
+  }
+
+  var stepsHTML = deviceSteps.map(function(s) { return '<li>' + s + '</li>'; }).join('');
+  saveInstructions.innerHTML =
+    '<strong>' + deviceTitle + ' — Screenshot Instructions</strong>' +
+    '<ol>' + stepsHTML + '</ol>' +
+    '<p style="margin-top:10px; color:#666;">Your results are private — nothing has been sent anywhere. ' +
+    'A screenshot captures exactly what is on your screen right now, including your scores and the dimension descriptions. ' +
+    'You can share this image with a coach or therapist at any point.</p>';
+
+  saveBtn.onclick = function() {
+    saveInstructions.style.display = saveInstructions.style.display === 'block' ? 'none' : 'block';
+    if (saveInstructions.style.display === 'block') {
+      saveBtn.textContent = '✕  Close Instructions';
+      saveInstructions.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      saveBtn.textContent = '📋  Save My Results';
+    }
+  };
+
+  container.appendChild(saveInstructions);
+
+  const restartBtn = document.createElement('button');
+  restartBtn.className = 'restart-btn';
+  restartBtn.textContent = 'Begin Again';
+  restartBtn.onclick = function() { location.reload(); };
+  container.appendChild(restartBtn);
+}
+
+buildQuestions();
+</script>
+</body>
+</html>
