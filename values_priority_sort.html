@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choosing What Matters — A Values Sort</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', serif;
+    background: #F7F5F0;
+    color: #1C1C1C;
+    min-height: 100vh;
+  }
+  .header {
+    background: #1C1C1C;
+    color: #F7F5F0;
+    padding: 32px 40px;
+    border-bottom: 4px solid #7B6FA0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .header p {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #A8A8A8;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+  }
+  .restart-link {
+    background: none;
+    border: none;
+    color: #A8A8A8;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-decoration: underline;
+    cursor: pointer;
+    flex: 0 0 auto;
+    margin-top: 4px;
+  }
+  .instructions {
+    background: #EDE8F5;
+    border-left: 4px solid #7B6FA0;
+    padding: 20px 40px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #3C3C3C;
+  }
+  .step-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: #7B6FA0;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .progress-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    color: #888;
+    padding: 16px 40px 0;
+    text-align: right;
+  }
+  .progress-bar-wrap {
+    background: #E0DCF0;
+    height: 4px;
+    margin: 8px 40px 24px;
+    border-radius: 2px;
+  }
+  .progress-bar {
+    height: 4px;
+    background: #7B6FA0;
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+  .container {
+    padding: 8px 40px 24px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  h1.page-title {
+    font-size: 1.3rem;
+    font-weight: normal;
+    letter-spacing: 0.05em;
+    margin: 20px 0 4px;
+  }
+  .intro-block {
+    background: white;
+    border: 1px solid #E0DCF0;
+    border-radius: 2px;
+    padding: 26px 28px;
+    margin-top: 20px;
+  }
+  .intro-block p {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 14px;
+  }
+  .intro-block p:last-child { margin-bottom: 0; }
+  .intro-block strong { color: #1C1C1C; }
+  .card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .vcard {
+    background: white;
+    border: 1px solid #E0DCF0;
+    border-radius: 2px;
+    padding: 20px 22px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .vcard.selected, .vcard.ranked, .vcard.bottom-selected {
+    border-color: #7B6FA0;
+    border-width: 2px;
+    padding: 19px 21px;
+  }
+  .vcard .mark {
+    flex: 0 0 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #CCCAE0;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 2px;
+  }
+  .vcard.selected .mark, .vcard.ranked .mark {
+    background: #7B6FA0;
+    border-color: #7B6FA0;
+    color: white;
+    font-weight: bold;
+  }
+  .vcard.bottom-selected .mark {
+    background: #1C1C1C;
+    border-color: #1C1C1C;
+    color: white;
+  }
+  .vcard.disabled { opacity: 0.4; pointer-events: none; }
+  .vcard .value-name {
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+  .vcard .value-text {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #555;
+  }
+  .actions {
+    max-width: 860px;
+    margin: 28px auto 0;
+    padding: 0 40px 60px;
+    display: flex;
+    gap: 12px;
+  }
+  .submit-btn {
+    flex: 1;
+    background: #1C1C1C;
+    color: #F7F5F0;
+    border: none;
+    padding: 16px 24px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .submit-btn:hover { background: #7B6FA0; }
+  .submit-btn:disabled {
+    background: #CCCAE0;
+    cursor: not-allowed;
+    color: #888;
+  }
+  .restart-btn {
+    background: transparent;
+    border: 2px solid #1C1C1C;
+    color: #1C1C1C;
+    padding: 14px 24px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { background: #1C1C1C; color: #F7F5F0; }
+  .results-container { padding: 8px 40px 60px; max-width: 860px; margin: 0 auto; }
+  .results-title {
+    font-size: 1.3rem;
+    font-weight: normal;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 20px 0 8px;
+  }
+  .results-subtitle {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.7;
+  }
+  .rank-card {
+    background: white;
+    border: 1px solid #E0DCF0;
+    border-radius: 2px;
+    padding: 20px 24px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .rank-badge {
+    flex: 0 0 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #7B6FA0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-top: 2px;
+  }
+  .rank-card.bottom .rank-badge { background: #1C1C1C; }
+  .rank-card .value-name { font-size: 1.05rem; margin-bottom: 4px; }
+  .rank-card .value-text {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.6;
+  }
+  .bottom-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #1C1C1C;
+    margin: 28px 0 12px;
+  }
+  .reflection-note {
+    background: #EDE8F5;
+    border-left: 4px solid #7B6FA0;
+    padding: 20px 24px;
+    margin-top: 26px;
+    border-radius: 2px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.87rem;
+    line-height: 1.7;
+    color: #3C3C3C;
+    font-style: italic;
+  }
+  .save-btn {
+    margin-top: 28px;
+    background: #7B6FA0;
+    border: none;
+    color: #F7F5F0;
+    padding: 16px 36px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .save-btn:hover { background: #5A4E80; }
+  .save-instructions {
+    margin-top: 16px;
+    background: #F0EEF8;
+    border: 1px solid #D8D0F0;
+    border-radius: 2px;
+    padding: 18px 20px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #444;
+    display: none;
+  }
+  .save-instructions strong {
+    color: #1C1C1C;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .save-instructions ol { padding-left: 18px; margin-top: 6px; }
+  .save-instructions ol li { margin-bottom: 4px; }
+  .begin-again-btn { margin-top: 12px; width: 100%; }
+  @media print {
+    .actions, .restart-link, .save-btn, .save-instructions,
+    .progress-bar-wrap, .progress-label { display: none; }
+    body { background: white; }
+    .header { background: #1C1C1C !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Choosing What Matters</h1>
+    <p>A values-sorting exercise — tap to choose, no dragging required</p>
+  </div>
+  <button class="restart-link" id="restartBtn">Start over</button>
+</div>
+<div id="app"></div>
+
+<script>
+const VALUES = [
+  {id:'autonomy', name:'Autonomy', statement:'Being free to make my own choices and direct my own life is important to me.'},
+  {id:'humility', name:'Humility', statement:"I don't need to be right, be the expert, or have the last word."},
+  {id:'connection', name:'Connection', statement:'Being close to others, and feeling accepted and loved by them, is important to me.'},
+  {id:'power', name:'Power', statement:'Having influence and control over decisions and outcomes is important to me.'},
+  {id:'order', name:'Order', statement:'I like things to be organized and in order.'},
+  {id:'status', name:'Status', statement:'My standing or position relative to others matters to me.'},
+  {id:'integrity', name:'Integrity', statement:'Honor, fair play and principles are important to me.'},
+  {id:'family', name:'Family', statement:'I prioritize time and energy for my family.'},
+  {id:'recognition', name:'Recognition', statement:'Being acknowledged for my contributions matters to me.'},
+  {id:'aesthetics', name:'Aesthetics', statement:'Music, art and beautiful experiences are essential for my well-being.'},
+  {id:'exploration', name:'Exploration', statement:'I love to learn, try new things, or travel to far-flung places.'},
+  {id:'achievement', name:'Achievement', statement:'I like to be competent, achieve and succeed in what I do.'},
+  {id:'security', name:'Security & Stability', statement:'Having a stable, secure foundation — financially and otherwise — is important to me.'},
+  {id:'service', name:'Service', statement:'I like to get involved in social causes and make a societal contribution.'},
+  {id:'spirituality', name:'Spirituality', statement:'Connecting to something greater than myself gives my life meaning.'},
+  {id:'health', name:'Health', statement:'Being in good physical and mental health is one of my priorities.'},
+  {id:'creativity', name:'Creativity', statement:'Generating new things, and shaping and building things, is important to me.'},
+  {id:'care', name:'Care', statement:'Caring for others, and seeing them grow and develop, is very important to me.'},
+  {id:'playfulness', name:'Playfulness', statement:'Having fun and not taking things too seriously is important to me.'},
+  {id:'courage', name:'Courage', statement:"Facing fear and doing the right thing, even when it's hard, is important to me."},
+  {id:'legacy', name:'Legacy', statement:'Leaving something meaningful behind for others matters to me.'}
+];
+
+function shuffledOrder(){
+  const arr = VALUES.map(v=>v.id);
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+let state = {};
+function resetState(){
+  state = { phase:'intro', order: shuffledOrder(), top5: [], ranked: [], bottomId: null };
+}
+resetState();
+
+const app = document.getElementById('app');
+document.getElementById('restartBtn').addEventListener('click', ()=>{
+  if(state.phase==='intro' || confirm('Start over from the beginning?')){
+    resetState();
+    render();
+  }
+});
+
+function byId(id){ return VALUES.find(v=>v.id===id); }
+
+function render(){
+  if(state.phase==='intro') return renderIntro();
+  if(state.phase==='top5') return renderTop5();
+  if(state.phase==='rank') return renderRank();
+  if(state.phase==='bottom') return renderBottom();
+  if(state.phase==='results') return renderResults();
+}
+
+function progress(pct, label){
+  return `<div class="progress-label">${label}</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>`;
+}
+
+function renderIntro(){
+  app.innerHTML = `
+    <div class="instructions">
+      There are 21 statements below, each describing something people commonly value.
+      Work through the three steps below — your first instinct is usually the most truthful one.
+    </div>
+    <div class="container">
+      <h1 class="page-title">Before you begin</h1>
+      <div class="intro-block">
+        <p><strong>Step 1.</strong> Choose the 5 statements that matter most to you.</p>
+        <p><strong>Step 2.</strong> Rank those 5, starting with what matters most.</p>
+        <p><strong>Step 3.</strong> From everything you didn't choose, pick the one that matters least to you right now.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="submit-btn" id="beginBtn">Begin</button>
+    </div>
+  `;
+  document.getElementById('beginBtn').addEventListener('click', ()=>{ state.phase='top5'; render(); });
+}
+
+function renderTop5(){
+  const n = state.top5.length;
+  const cards = state.order.map(id=>{
+    const v = byId(id);
+    const selected = state.top5.includes(id);
+    const disabled = !selected && n>=5;
+    return `<div class="vcard ${selected?'selected':''} ${disabled?'disabled':''}" data-id="${id}">
+      <div class="mark">${selected?'✓':''}</div>
+      <div><div class="value-name">${v.name}</div><div class="value-text">${v.statement}</div></div>
+    </div>`;
+  }).join('');
+
+  app.innerHTML = `
+    <div class="instructions"><span class="step-label">Step 1 of 3</span><br>Tap the 5 statements that matter most to you.</div>
+    ${progress((n/5)*100, n+' of 5 selected')}
+    <div class="container"><div class="card-list">${cards}</div></div>
+    <div class="actions">
+      <button class="submit-btn" id="nextBtn" ${n===5?'':'disabled'}>Continue</button>
+    </div>
+  `;
+
+  app.querySelectorAll('.vcard[data-id]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.id;
+      const idx = state.top5.indexOf(id);
+      if(idx>-1){ state.top5.splice(idx,1); }
+      else if(state.top5.length<5){ state.top5.push(id); }
+      renderTop5();
+    });
+  });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(state.top5.length===5){ state.ranked=[]; state.phase='rank'; render(); }
+  });
+}
+
+function renderRank(){
+  const cards = state.top5.map(id=>{
+    const v = byId(id);
+    const rankIdx = state.ranked.indexOf(id);
+    const ranked = rankIdx>-1;
+    return `<div class="vcard ${ranked?'ranked':''}" data-id="${id}">
+      <div class="mark">${ranked?(rankIdx+1):''}</div>
+      <div><div class="value-name">${v.name}</div><div class="value-text">${v.statement}</div></div>
+    </div>`;
+  }).join('');
+  const done = state.ranked.length===5;
+
+  app.innerHTML = `
+    <div class="instructions"><span class="step-label">Step 2 of 3</span><br>Tap in order, starting with what matters most. Tap a numbered card to undo it.</div>
+    ${progress((state.ranked.length/5)*100, state.ranked.length+' of 5 ranked')}
+    <div class="container"><div class="card-list">${cards}</div></div>
+    <div class="actions">
+      <button class="restart-btn" id="backBtn">Back</button>
+      <button class="submit-btn" id="nextBtn" ${done?'':'disabled'}>Continue</button>
+    </div>
+  `;
+
+  app.querySelectorAll('.vcard[data-id]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.id;
+      const idx = state.ranked.indexOf(id);
+      if(idx>-1){ state.ranked.splice(idx,1); }
+      else if(state.ranked.length<5){ state.ranked.push(id); }
+      renderRank();
+    });
+  });
+  document.getElementById('backBtn').addEventListener('click', ()=>{ state.phase='top5'; render(); });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(state.ranked.length===5){ state.phase='bottom'; render(); }
+  });
+}
+
+function renderBottom(){
+  const remaining = state.order.filter(id=>!state.top5.includes(id));
+  const cards = remaining.map(id=>{
+    const v = byId(id);
+    const selected = state.bottomId===id;
+    return `<div class="vcard ${selected?'bottom-selected':''}" data-id="${id}">
+      <div class="mark">${selected?'●':''}</div>
+      <div><div class="value-name">${v.name}</div><div class="value-text">${v.statement}</div></div>
+    </div>`;
+  }).join('');
+
+  app.innerHTML = `
+    <div class="instructions"><span class="step-label">Step 3 of 3</span><br>From the remaining 16, choose the one statement that resonates least with you.</div>
+    ${progress(state.bottomId?100:0, state.bottomId?'1 of 1 selected':'0 of 1 selected')}
+    <div class="container"><div class="card-list">${cards}</div></div>
+    <div class="actions">
+      <button class="restart-btn" id="backBtn">Back</button>
+      <button class="submit-btn" id="nextBtn" ${state.bottomId?'':'disabled'}>See my results</button>
+    </div>
+  `;
+
+  app.querySelectorAll('.vcard[data-id]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.id;
+      state.bottomId = (state.bottomId===id) ? null : id;
+      renderBottom();
+    });
+  });
+  document.getElementById('backBtn').addEventListener('click', ()=>{ state.phase='rank'; render(); });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(state.bottomId){ state.phase='results'; render(); }
+  });
+}
+
+function renderResults(){
+  const bv = byId(state.bottomId);
+  const rankCards = state.ranked.map((id,i)=>{
+    const v = byId(id);
+    return `<div class="rank-card">
+      <div class="rank-badge">${i+1}</div>
+      <div><div class="value-name">${v.name}</div><div class="value-text">${v.statement}</div></div>
+    </div>`;
+  }).join('');
+
+  app.innerHTML = `
+    <div class="results-container">
+      <div class="results-title">My Values Profile</div>
+      <div class="results-subtitle">This is a snapshot of today, not a permanent ranking — values shift with context and season of life.</div>
+      ${rankCards}
+      <div class="bottom-label">Sits at the bottom, for now</div>
+      <div class="rank-card bottom">
+        <div class="rank-badge">21</div>
+        <div><div class="value-name">${bv.name}</div><div class="value-text">${bv.statement}</div></div>
+      </div>
+      <div class="reflection-note">Notice what surprised you. Was there a value you expected to rank higher — or lower? What does that tell you about how you're living right now versus how you want to live?</div>
+      <button class="save-btn" id="saveBtn">📋  Save My Results</button>
+      <div class="save-instructions" id="saveInstructions"></div>
+      <button class="restart-btn begin-again-btn" id="restartBtn2">Begin Again</button>
+    </div>
+  `;
+
+  document.getElementById('restartBtn2').addEventListener('click', ()=>{ resetState(); render(); });
+
+  const saveBtn = document.getElementById('saveBtn');
+  const saveInstructions = document.getElementById('saveInstructions');
+  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var isAndroid = /Android/i.test(navigator.userAgent);
+  var deviceTitle, deviceSteps;
+  if (isIOS) {
+    deviceTitle = 'On iPhone or iPad';
+    deviceSteps = [
+      'Press the side button and volume-up button at the same time (iPhone X and later), or the home button and side button together (older iPhones).',
+      'A thumbnail appears in the bottom-left corner — tap it to view and annotate if you wish.',
+      'The screenshot saves automatically to your Photos app.',
+      'You can also tap Share and email it to yourself or your facilitator.'
+    ];
+  } else if (isAndroid) {
+    deviceTitle = 'On Android';
+    deviceSteps = [
+      'Hold the power button and volume-down button simultaneously for one to two seconds.',
+      'A screenshot notification appears — tap it to view or share.',
+      'The image saves to your Photos or Gallery app.',
+      'Use the Share option to email it to yourself or your facilitator directly.'
+    ];
+  } else {
+    deviceTitle = 'On a laptop or desktop';
+    deviceSteps = [
+      "Use your browser's Print function (Ctrl+P on Windows, Cmd+P on Mac) and choose \"Save as PDF.\"",
+      'Save the PDF to your device or cloud storage.',
+      'Alternatively, take a screenshot: on Mac use Cmd+Shift+4 to select an area; on Windows use the Snipping Tool or Win+Shift+S.'
+    ];
+  }
+  var stepsHTML = deviceSteps.map(function(s){ return '<li>'+s+'</li>'; }).join('');
+  saveInstructions.innerHTML =
+    '<strong>'+deviceTitle+' — Screenshot Instructions</strong>' +
+    '<ol>'+stepsHTML+'</ol>' +
+    '<p style="margin-top:10px; color:#666;">Your results are private — nothing has been sent anywhere. ' +
+    'A screenshot captures exactly what is on your screen right now. You can share it with a facilitator or keep it for yourself.</p>';
+  saveBtn.onclick = function(){
+    var open = saveInstructions.style.display === 'block';
+    saveInstructions.style.display = open ? 'none' : 'block';
+    saveBtn.textContent = open ? '📋  Save My Results' : '✕  Close Instructions';
+    if(!open) saveInstructions.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+}
+
+render();
+</script>
+</body>
+</html>
