@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Meaning Barometer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', serif;
+    background: #F7F5F0;
+    color: #1C1C1C;
+    min-height: 100vh;
+  }
+  .header {
+    background: #1C1C1C;
+    color: #F7F5F0;
+    padding: 32px 40px;
+    border-bottom: 4px solid #7B6FA0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .header p {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #A8A8A8;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+  }
+  .restart-link {
+    background: none; border: none; color: #A8A8A8;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem; letter-spacing: 0.05em;
+    text-decoration: underline; cursor: pointer;
+    flex: 0 0 auto; margin-top: 4px;
+  }
+  .instructions {
+    background: #EDE8F5;
+    border-left: 4px solid #7B6FA0;
+    padding: 20px 40px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem; line-height: 1.7; color: #3C3C3C;
+  }
+  .step-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.7rem; letter-spacing: 0.12em;
+    color: #7B6FA0; text-transform: uppercase; margin-bottom: 6px;
+    display: inline-block;
+  }
+  .container { padding: 8px 40px 24px; max-width: 820px; margin: 0 auto; }
+  h1.page-title { font-size: 1.3rem; font-weight: normal; letter-spacing: 0.05em; margin: 20px 0 4px; }
+  .intro-block {
+    background: white; border: 1px solid #E0DCF0; border-radius: 2px;
+    padding: 26px 28px; margin-top: 20px;
+  }
+  .intro-block p {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.92rem; line-height: 1.8; color: #333; margin-bottom: 14px;
+  }
+  .intro-block p:last-child { margin-bottom: 0; }
+  .intro-block strong { color: #1C1C1C; }
+  .item {
+    background: white; border: 1px solid #E0DCF0; border-radius: 2px;
+    padding: 22px 24px; margin-top: 16px;
+  }
+  .item.touched { border-color: #7B6FA0; }
+  .item-name { font-size: 1.08rem; margin-bottom: 4px; }
+  .item-q {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem; line-height: 1.6; color: #555; margin-bottom: 18px;
+  }
+  .slider-row { display: flex; align-items: center; gap: 16px; }
+  .cap {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #999; flex: 0 0 auto; width: 34px;
+  }
+  .cap.high { text-align: right; }
+  input[type=range] {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 6px; border-radius: 3px; background: #E0DCF0; outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #7B6FA0; cursor: pointer; border: 3px solid #F7F5F0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #7B6FA0; cursor: pointer; border: 3px solid #F7F5F0;
+  }
+  input[type=range].unset { opacity: 0.5; }
+  input[type=range].unset::-webkit-slider-thumb { background: #BBB; }
+  input[type=range].unset::-moz-range-thumb { background: #BBB; }
+  .score-badge {
+    flex: 0 0 42px; height: 42px; border-radius: 50%;
+    border: 2px solid #CCCAE0; background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.15rem;
+    font-weight: bold; color: #7B6FA0;
+  }
+  .score-badge.set { background: #7B6FA0; border-color: #7B6FA0; color: white; }
+  .ticks {
+    display: flex; justify-content: space-between; margin: 8px 66px 0 50px;
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.7rem; color: #B0AEC0;
+  }
+  .actions { max-width: 820px; margin: 28px auto 0; padding: 0 40px 60px; display: flex; gap: 12px; }
+  .submit-btn {
+    flex: 1; background: #1C1C1C; color: #F7F5F0; border: none;
+    padding: 16px 24px; font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; border-radius: 2px; transition: background 0.2s;
+  }
+  .submit-btn:hover { background: #7B6FA0; }
+  .submit-btn:disabled { background: #CCCAE0; cursor: not-allowed; color: #888; }
+  .restart-btn {
+    background: transparent; border: 2px solid #1C1C1C; color: #1C1C1C;
+    padding: 14px 24px; font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; border-radius: 2px; transition: all 0.2s;
+  }
+  .restart-btn:hover { background: #1C1C1C; color: #F7F5F0; }
+  .hint {
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem;
+    color: #7B6FA0; text-align: right; padding: 14px 40px 0; max-width: 820px; margin: 0 auto;
+  }
+  .results-container { padding: 8px 40px 60px; max-width: 820px; margin: 0 auto; }
+  .results-title { font-size: 1.3rem; font-weight: normal; letter-spacing: 0.06em; text-transform: uppercase; margin: 20px 0 8px; }
+  .results-subtitle { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; color: #666; margin-bottom: 30px; line-height: 1.7; }
+  .rank-card {
+    background: white; border: 1px solid #E0DCF0; border-radius: 2px;
+    padding: 20px 24px; margin-bottom: 14px; display: flex; gap: 18px; align-items: center;
+  }
+  .rank-card.top { border-color: #7B6FA0; border-width: 2px; padding: 19px 23px; }
+  .rank-badge {
+    flex: 0 0 44px; height: 44px; border-radius: 50%; background: #E0DCF0; color: #5A4E80;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: bold; font-size: 1.2rem;
+  }
+  .rank-card.top .rank-badge { background: #7B6FA0; color: white; }
+  .rank-card .value-name { font-size: 1.05rem; margin-bottom: 3px; }
+  .rank-card .value-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.82rem; color: #555; line-height: 1.6; }
+  .reflection-note {
+    background: #EDE8F5; border-left: 4px solid #7B6FA0; padding: 20px 24px;
+    margin-top: 26px; border-radius: 2px; font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.87rem; line-height: 1.7; color: #3C3C3C; font-style: italic;
+  }
+  .save-btn {
+    margin-top: 28px; background: #7B6FA0; border: none; color: #F7F5F0;
+    padding: 16px 36px; font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; border-radius: 2px; transition: all 0.2s; width: 100%;
+  }
+  .save-btn:hover { background: #5A4E80; }
+  .save-instructions {
+    margin-top: 16px; background: #F0EEF8; border: 1px solid #D8D0F0; border-radius: 2px;
+    padding: 18px 20px; font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem; line-height: 1.7; color: #444; display: none;
+  }
+  .save-instructions strong { color: #1C1C1C; display: block; margin-bottom: 6px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .save-instructions ol { padding-left: 18px; margin-top: 6px; }
+  .save-instructions ol li { margin-bottom: 4px; }
+  .begin-again-btn { margin-top: 12px; width: 100%; }
+  @media print {
+    .actions, .restart-link, .save-btn, .save-instructions, .hint { display: none; }
+    body { background: white; }
+    .header { background: #1C1C1C !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>The Meaning Barometer</h1>
+    <p>A forced-score reflection &mdash; every dimension gets its own number</p>
+  </div>
+  <button class="restart-link" id="restartBtn">Start over</button>
+</div>
+<div id="app"></div>
+
+<script>
+const ITEMS = [
+  {id:'acceptance', name:'Self-acceptance', q:'Do you accept yourself the way you are, limitations included?'},
+  {id:'relations', name:'Positive relations with others', q:'Do you have trusting, warm and positive relations with other people?'},
+  {id:'mastery', name:'Self-efficacy and mastery', q:'Do you believe you possess the capabilities to influence events that affect your life?'},
+  {id:'growth', name:'Self-actualisation and growth', q:'Do you believe you are in a place to fully develop and achieve your maximum potential?'},
+  {id:'purpose', name:'Meaning and usefulness', q:'Do you have a sense of purpose in your current life emanating from your values?'}
+];
+const MAXV = 7;
+
+let state = {};
+function resetState(){
+  // distinct starting values across the range; the middle five of 1..7
+  const start = {acceptance:2, relations:3, mastery:4, growth:5, purpose:6};
+  state = { phase:'intro', scores: Object.assign({}, start), touched:{} };
+}
+resetState();
+
+const app = document.getElementById('app');
+document.getElementById('restartBtn').addEventListener('click', ()=>{
+  if(state.phase==='intro' || confirm('Start over from the beginning?')){ resetState(); render(); }
+});
+function byId(id){ return ITEMS.find(v=>v.id===id); }
+
+function setScore(id, v){
+  v = Math.max(1, Math.min(MAXV, v));
+  if(state.scores[id]===v){ state.touched[id]=true; return; }
+  const holder = ITEMS.find(it=> it.id!==id && state.scores[it.id]===v);
+  if(holder){
+    // values used by everyone except this slider and the holder (holder is vacating v)
+    const usedByOthers = new Set(ITEMS.filter(it=>it.id!==id && it.id!==holder.id).map(it=>state.scores[it.id]));
+    let free = null;
+    for(let d=1; d<=MAXV && free===null; d++){
+      for(const cand of [v-d, v+d]){
+        if(cand>=1 && cand<=MAXV && cand!==v && !usedByOthers.has(cand)){ free=cand; break; }
+      }
+    }
+    if(free===null){ // fallback: first free slot
+      for(let c=1;c<=MAXV;c++){ if(c!==v && !usedByOthers.has(c)){ free=c; break; } }
+    }
+    state.scores[holder.id]=free; state.touched[holder.id]=true;
+  }
+  state.scores[id]=v; state.touched[id]=true;
+}
+
+function render(){
+  if(state.phase==='intro') return renderIntro();
+  if(state.phase==='rate') return renderRate();
+  if(state.phase==='results') return renderResults();
+}
+
+function renderIntro(){
+  app.innerHTML = `
+    <div class="instructions">
+      Five dimensions of meaning, each scored from 1 (low) to 7 (high). This is a forced score:
+      no two dimensions may share the same number, so you are made to say which matters more.
+      Your first instinct is usually the most truthful one.
+    </div>
+    <div class="container">
+      <h1 class="page-title">Making meaning</h1>
+      <div class="intro-block">
+        <p>We do not find meaning, we create it. People pursue all kinds of things, money, relationships, power, status, knowledge, skill, but ultimately they do what they do because they believe it will bring them greater happiness and meaning. Money, for example, is normally just a means to an end.</p>
+        <p>People derive meaning in many different ways. For some it comes from a fulfilling job or a satisfying relationship. For others it is the ability to meet life's challenges with equanimity. Whatever its source, meaning and purpose lie within our control. When we have a sense of meaning we are generally more successful, more productive and more balanced.</p>
+        <p><strong>The one common denominator in every human being is a move towards fulfilment.</strong> This barometer helps you see which levers of meaning are strongest for you right now, and where there is room to create more.</p>
+      </div>
+    </div>
+    <div class="actions"><button class="submit-btn" id="beginBtn">Begin</button></div>
+  `;
+  document.getElementById('beginBtn').addEventListener('click', ()=>{ state.phase='rate'; render(); });
+}
+
+function renderRate(){
+  const rows = ITEMS.map(it=>{
+    const v = state.scores[it.id];
+    const touched = state.touched[it.id];
+    return `<div class="item ${touched?'touched':''}" data-id="${it.id}">
+      <div class="item-name">${it.name}</div>
+      <div class="item-q">${it.q}</div>
+      <div class="slider-row">
+        <span class="cap">Low</span>
+        <input type="range" min="1" max="${MAXV}" step="1" value="${v}" data-id="${it.id}" class="${touched?'':'unset'}" aria-label="${it.name}">
+        <span class="cap high">High</span>
+        <div class="score-badge ${touched?'set':''}" data-badge="${it.id}">${touched?v:'&ndash;'}</div>
+      </div>
+      <div class="ticks">${[1,2,3,4,5,6,7].map(n=>`<span>${n}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+  const allTouched = ITEMS.every(it=>state.touched[it.id]);
+
+  app.innerHTML = `
+    <div class="instructions"><span class="step-label">Score each dimension</span><br>
+      Move every slider. No two may rest on the same number, so nudging one onto another's value pushes the other aside.</div>
+    <div class="hint">${ITEMS.filter(it=>state.touched[it.id]).length} of 5 set</div>
+    <div class="container">${rows}</div>
+    <div class="actions"><button class="submit-btn" id="nextBtn" ${allTouched?'':'disabled'}>See my barometer</button></div>
+  `;
+
+  app.querySelectorAll('input[type=range]').forEach(inp=>{
+    inp.addEventListener('input', (e)=>{
+      setScore(e.target.dataset.id, parseInt(e.target.value,10));
+      refreshRows();
+    });
+  });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(ITEMS.every(it=>state.touched[it.id])){ state.phase='results'; render(); }
+  });
+}
+
+function refreshRows(){
+  ITEMS.forEach(it=>{
+    const v = state.scores[it.id];
+    const touched = state.touched[it.id];
+    const inp = app.querySelector('input[data-id="'+it.id+'"]');
+    const badge = app.querySelector('[data-badge="'+it.id+'"]');
+    const item = app.querySelector('.item[data-id="'+it.id+'"]');
+    if(inp){ inp.value = v; inp.classList.toggle('unset', !touched); }
+    if(badge){ badge.innerHTML = touched ? v : '&ndash;'; badge.classList.toggle('set', !!touched); }
+    if(item){ item.classList.toggle('touched', !!touched); }
+  });
+  const set = ITEMS.filter(it=>state.touched[it.id]).length;
+  const hint = app.querySelector('.hint'); if(hint) hint.textContent = set+' of 5 set';
+  const btn = document.getElementById('nextBtn'); if(btn) btn.disabled = set!==5;
+}
+
+function renderResults(){
+  const ordered = ITEMS.slice().sort((a,b)=> state.scores[b.id]-state.scores[a.id]);
+  const cards = ordered.map((it,i)=>{
+    return `<div class="rank-card ${i===0?'top':''}">
+      <div class="rank-badge">${state.scores[it.id]}</div>
+      <div><div class="value-name">${it.name}</div><div class="value-text">${it.q}</div></div>
+    </div>`;
+  }).join('');
+  const top = ordered[0], low = ordered[ordered.length-1];
+
+  app.innerHTML = `
+    <div class="results-container">
+      <div class="results-title">My Meaning Barometer</div>
+      <div class="results-subtitle">A snapshot of today, not a verdict. The order shows where meaning is running strongest for you now, and where there is most room to create more.</div>
+      ${cards}
+      <div class="reflection-note">Your strongest lever right now is <strong>${top.name.toLowerCase()}</strong>, and the one with the most room is <strong>${low.name.toLowerCase()}</strong>. Which of these surprises you? What would move the lowest one up by a single point in the coming month, and what is one small thing within your control that would do it?</div>
+      <button class="save-btn" id="saveBtn">Save my results</button>
+      <div class="save-instructions" id="saveInstructions"></div>
+      <button class="restart-btn begin-again-btn" id="restartBtn2">Begin again</button>
+    </div>
+  `;
+
+  document.getElementById('restartBtn2').addEventListener('click', ()=>{ resetState(); render(); });
+  const saveBtn = document.getElementById('saveBtn');
+  const saveInstructions = document.getElementById('saveInstructions');
+  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var isAndroid = /Android/i.test(navigator.userAgent);
+  var deviceTitle, deviceSteps;
+  if (isIOS) {
+    deviceTitle = 'On iPhone or iPad';
+    deviceSteps = ['Press the side button and volume-up button together.','A thumbnail appears in the bottom-left corner; tap it to view.','It saves automatically to your Photos app.','You can also tap Share to email it to yourself or your facilitator.'];
+  } else if (isAndroid) {
+    deviceTitle = 'On Android';
+    deviceSteps = ['Hold the power and volume-down buttons together for a moment.','Tap the screenshot notification to view or share.','It saves to your Photos or Gallery.','Use Share to email it to yourself or your facilitator.'];
+  } else {
+    deviceTitle = 'On a laptop or desktop';
+    deviceSteps = ["Use your browser's Print function (Ctrl+P on Windows, Cmd+P on Mac) and choose Save as PDF.",'Or take a screenshot: on Mac use Cmd+Shift+4; on Windows use Win+Shift+S.'];
+  }
+  var stepsHTML = deviceSteps.map(function(s){ return '<li>'+s+'</li>'; }).join('');
+  saveInstructions.innerHTML = '<strong>'+deviceTitle+' &mdash; how to keep a copy</strong><ol>'+stepsHTML+'</ol>'+
+    '<p style="margin-top:10px; color:#666;">Your results are private. Nothing has been sent anywhere; a screenshot simply captures what is on your screen.</p>';
+  saveBtn.onclick = function(){
+    var open = saveInstructions.style.display === 'block';
+    saveInstructions.style.display = open ? 'none' : 'block';
+    saveBtn.textContent = open ? 'Save my results' : 'Close instructions';
+    if(!open) saveInstructions.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+}
+
+render();
+</script>
+</body>
+</html>
