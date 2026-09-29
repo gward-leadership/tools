@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Diminisher Self-Check</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: #F7F5F0; color: #1C1C1C; min-height: 100vh; }
+  .header { background: #1C1C1C; color: #F7F5F0; padding: 32px 40px; border-bottom: 4px solid #7B6FA0; display: flex; justify-content: space-between; align-items: flex-start; }
+  .header h1 { font-size: 1.4rem; font-weight: normal; letter-spacing: 0.06em; text-transform: uppercase; }
+  .header p { margin-top: 8px; font-size: 0.9rem; color: #A8A8A8; font-family: 'Helvetica Neue', Arial, sans-serif; letter-spacing: 0.03em; }
+  .restart-link { background: none; border: none; color: #A8A8A8; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; letter-spacing: 0.05em; text-decoration: underline; cursor: pointer; flex: 0 0 auto; margin-top: 4px; }
+  .instructions { background: #EDE8F5; border-left: 4px solid #7B6FA0; padding: 20px 40px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.88rem; line-height: 1.7; color: #3C3C3C; }
+  .step-label { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; color: #7B6FA0; text-transform: uppercase; display:inline-block; margin-bottom:4px; }
+  .progress-label { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; color: #888; padding: 16px 40px 0; text-align: right; }
+  .progress-bar-wrap { background: #E0DCF0; height: 4px; margin: 8px 40px 20px; border-radius: 2px; }
+  .progress-bar { height: 4px; background: #7B6FA0; border-radius: 2px; transition: width 0.3s; }
+  .container { padding: 8px 40px 24px; max-width: 880px; margin: 0 auto; }
+  h1.page-title { font-size: 1.3rem; font-weight: normal; letter-spacing: 0.05em; margin: 20px 0 4px; }
+  .intro-block { background: white; border: 1px solid #E0DCF0; border-radius: 2px; padding: 26px 28px; margin-top: 20px; }
+  .intro-block p { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.92rem; line-height: 1.8; color: #333; margin-bottom: 14px; }
+  .intro-block p:last-child { margin-bottom: 0; }
+  .intro-block strong { color: #1C1C1C; }
+  .part-head { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #7B6FA0; margin: 26px 0 4px; font-weight: 700; }
+  .part-sub { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; color: #888; margin-bottom: 6px; }
+  .item { background: white; border: 1px solid #E0DCF0; border-radius: 2px; padding: 20px 22px; margin-top: 14px; }
+  .item.answered { border-color: #7B6FA0; }
+  .item .tendency { font-size: 1.02rem; margin-bottom: 3px; }
+  .item .statement { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.86rem; line-height: 1.55; color: #555; margin-bottom: 16px; }
+  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+  .scale button { border: 1px solid #D8D4E8; background: #FAF9F6; color: #666; border-radius: 3px; padding: 12px 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; line-height: 1.2; cursor: pointer; display:flex; flex-direction:column; align-items:center; gap:5px; -webkit-tap-highlight-color: transparent; }
+  .scale button .num { font-family: 'Georgia', serif; font-size: 1.1rem; color: #1C1C1C; }
+  .scale button[aria-pressed=true] { background: #7B6FA0; border-color: #7B6FA0; color: #fff; }
+  .scale button[aria-pressed=true] .num { color: #fff; }
+  .scale .lab { min-height: 1.9em; display:flex; align-items:center; text-align:center; }
+  .item.miss { outline: 2px solid #B5462F; outline-offset: 6px; }
+  .actions { max-width: 880px; margin: 0 auto; padding: 20px 40px 60px; display: flex; gap: 12px; }
+  .submit-btn { flex: 1; background: #1C1C1C; color: #F7F5F0; border: none; padding: 16px 24px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.2s; }
+  .submit-btn:hover { background: #7B6FA0; }
+  .submit-btn:disabled { background: #CCCAE0; cursor: not-allowed; color: #888; }
+  .restart-btn { background: transparent; border: 2px solid #1C1C1C; color: #1C1C1C; padding: 14px 24px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; }
+  .restart-btn:hover { background: #1C1C1C; color: #F7F5F0; }
+  .submitbar-msg { font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.8rem; color:#888; align-self:center; }
+  /* results */
+  .results { padding: 8px 40px 60px; max-width: 880px; margin: 0 auto; }
+  .results-title { font-size: 1.3rem; font-weight: normal; letter-spacing: 0.06em; text-transform: uppercase; margin: 20px 0 18px; }
+  .score-band { background: #1C1C1C; color: #F7F5F0; border-radius: 3px; padding: 24px 26px; display:flex; gap:24px; align-items:center; flex-wrap:wrap; }
+  .score-big { font-family:'Georgia',serif; font-size: 3rem; line-height:1; }
+  .score-big small { font-size: 1.1rem; color:#A8A8A8; }
+  .band-text { flex:1 1 300px; }
+  .band-name { font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:#B9AEDC; margin-bottom:6px; }
+  .band-desc { font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.9rem; line-height:1.6; color:#E8E4F2; }
+  .sig-label { font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:#7B6FA0; margin: 30px 0 6px; font-weight:700; }
+  .sig-card { background: white; border: 1px solid #E0DCF0; border-left: 4px solid #7B6FA0; border-radius: 2px; padding: 18px 22px; margin-bottom: 12px; }
+  .sig-card.top { border-left-color:#B5462F; }
+  .sig-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .sig-name { font-size: 1.05rem; }
+  .sig-score { font-family:'Georgia',serif; font-size:1.3rem; color:#7B6FA0; }
+  .sig-move { font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.86rem; line-height:1.6; color:#3C3C3C; margin-top:8px; }
+  .sig-move b { color:#B5462F; font-weight:700; }
+  .full-label { font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:#888; margin: 26px 0 8px; font-weight:700; }
+  .fullrow { display:flex; justify-content:space-between; gap:12px; font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.85rem; padding:8px 2px; border-bottom:1px solid #E8E4EE; color:#444; }
+  .fullrow .v { font-family:'Georgia',serif; color:#7B6FA0; font-weight:700; }
+  .commit { background:#EDE8F5; border-left:4px solid #7B6FA0; border-radius:2px; padding:20px 24px; margin-top:26px; font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.9rem; line-height:1.7; color:#3C3C3C; }
+  .commit strong { color:#1C1C1C; }
+  .attrib { font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.72rem; color:#999; line-height:1.6; margin-top:24px; font-style:italic; }
+  .save-btn { margin-top: 24px; background: #7B6FA0; border: none; color: #F7F5F0; padding: 16px 36px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; width: 100%; }
+  .save-btn:hover { background:#5A4E80; }
+  .save-instructions { margin-top: 16px; background: #F0EEF8; border: 1px solid #D8D0F0; border-radius: 2px; padding: 18px 20px; font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.82rem; line-height:1.7; color:#444; display:none; }
+  .save-instructions strong { color:#1C1C1C; display:block; margin-bottom:6px; font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; }
+  .save-instructions ol { padding-left:18px; margin-top:6px; }
+  .begin-again-btn { margin-top:12px; width:100%; }
+  @media print { .actions, .restart-link, .save-btn, .save-instructions, .progress-label, .progress-bar-wrap { display:none; } body{background:white;} .header{background:#1C1C1C !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;} }
+</style>
+</head>
+<body>
+<div class="header">
+  <div><h1>The Diminisher Self-Check</h1><p>Are you accidentally diminishing your people?</p></div>
+  <button class="restart-link" id="restartBtn">Start over</button>
+</div>
+<div id="app"></div>
+
+<script>
+const ITEMS = [
+ {id:'idea', part:'A', name:'The Idea Fountain', st:"I generate so many ideas that my team struggles to keep up, or stops offering their own.", move:"Hold your ideas back. Ask for theirs first, and cap yourself to one contribution."},
+ {id:'always', part:'A', name:'The Always-On', st:"My energy and presence fill the room, and I tend to do most of the talking.", move:"Talk less and wait longer. Let silence pull thinking out of the room."},
+ {id:'rescuer', part:'A', name:'The Rescuer', st:"When someone is struggling, I step in quickly to help or fix it.", move:"Let them struggle productively. Ask what they have tried before you help."},
+ {id:'pace', part:'A', name:'The Pacesetter', st:"I set the standard by doing it myself and moving fast, and expect others to match my pace.", move:"Set the challenge, not the pace. Define the finish line and let them find the route."},
+ {id:'rapid', part:'A', name:'The Rapid Responder', st:"I answer questions and settle matters so quickly that others do not get the chance to.", move:"Slow your response. Redirect the question with, what do you think?"},
+ {id:'optimist', part:'A', name:'The Optimist', st:"I stay so positive that I may signal that struggle, doubt or failure are not welcome.", move:"Name the hard reality too, so it is safe for others to admit struggle."},
+ {id:'protector', part:'A', name:'The Protector', st:"I shield my people from hard news, politics or difficult problems to keep them safe.", move:"Expose them to the real problem with your support, so they learn to navigate it."},
+ {id:'strategist', part:'A', name:'The Strategist', st:"I lay out such a complete vision and plan that others execute rather than think.", move:"Ask the questions that let them build the strategy themselves."},
+ {id:'perfect', part:'A', name:'The Perfectionist', st:"I hold very high standards and often rework or correct my people's output.", move:"Give ownership and let good enough stand. Coach the work rather than redo it."},
+ {id:'knowitall', part:'B', name:'The Know-It-All', st:"I give direction that signals how much I know, rather than drawing out what others know.", move:"Ask genuine questions and treat your own view as one input among several."},
+ {id:'micro', part:'B', name:'The Micromanager', st:"I stay close to the detail and want decisions to route through me for sign-off.", move:"Delegate the decision, agree how you will stay sighted, then step back."},
+ {id:'intensity', part:'B', name:'The Intensity-Maker', st:"People are careful around me and hold back ideas until they know what I think.", move:"Lower the threat. Invite dissent openly and thank people for the red flag."}
+];
+const SCALE = [["1","Rarely"],["2",""],["3","Sometimes"],["4",""],["5","Almost always"]];
+const BANDS = [
+ {lo:12,hi:24,name:"Predominantly multiplying",desc:"You mostly create space for others to think. Keep an eye on your one or two higher items."},
+ {lo:25,hi:36,name:"Mixed",desc:"You amplify in some ways and unintentionally diminish in others. Your top two items are worth targeting."},
+ {lo:37,hi:48,name:"Frequently diminishing",desc:"Usually with the best intentions. Your most capable people are probably holding back. Choose one behaviour to change deliberately."},
+ {lo:49,hi:60,name:"Strongly diminishing",desc:"Control is likely costing you engagement, initiative and retention. This is the highest-leverage place to begin."}
+];
+
+let state={};
+function reset(){ state={phase:'intro', scores:{}}; }
+reset();
+const app=document.getElementById('app');
+document.getElementById('restartBtn').addEventListener('click',()=>{ if(state.phase==='intro'||confirm('Start over from the beginning?')){ reset(); render(); }});
+function byId(id){ return ITEMS.find(i=>i.id===id); }
+function answered(){ return ITEMS.filter(i=>state.scores[i.id]!=null).length; }
+
+function render(){
+  if(state.phase==='intro') return renderIntro();
+  if(state.phase==='rate') return renderRate();
+  if(state.phase==='results') return renderResults();
+}
+function renderIntro(){
+  app.innerHTML = `
+   <div class="instructions">Twelve statements. Rate how often each is true of you, from 1 (rarely) to 5 (almost always). A generous self-score teaches you nothing, so be honest. This is recognition, not judgement.</div>
+   <div class="container">
+     <h1 class="page-title">A self-check for The Leader as Developer</h1>
+     <div class="intro-block">
+       <p>The best leaders multiply the intelligence and capability of those around them. Others, often without meaning to, do the opposite: they shut thinking down. <strong>Most diminishing is unintentional, and comes from good, capable leaders trying to help.</strong></p>
+       <p>Read each statement and rate how often it is true of you. Then look at your two or three highest numbers. Those are your signature moves, and the place to start.</p>
+     </div>
+   </div>
+   <div class="actions"><button class="submit-btn" id="beginBtn">Begin</button></div>`;
+  document.getElementById('beginBtn').addEventListener('click',()=>{ state.phase='rate'; render(); });
+}
+function renderRate(){
+  let html = `<div class="instructions"><span class="step-label">The self-check</span><br>Rate each statement from 1 (rarely) to 5 (almost always).</div>
+   <div class="progress-label" id="plabel">${answered()} of 12 answered</div>
+   <div class="progress-bar-wrap"><div class="progress-bar" id="pbar" style="width:${answered()/12*100}%"></div></div>
+   <div class="container">`;
+  html += `<div class="part-head">Part A. Well-intentioned habits</div><div class="part-sub">The accidental diminisher</div>`;
+  let inB=false;
+  ITEMS.forEach((it,idx)=>{
+    if(it.part==='B' && !inB){ html += `<div class="part-head" style="margin-top:32px">Part B. Control-driven habits</div><div class="part-sub">The direct diminisher</div>`; inB=true; }
+    const v=state.scores[it.id];
+    html += `<div class="item ${v!=null?'answered':''}" id="it-${it.id}">
+      <div class="tendency">${it.name}</div>
+      <div class="statement">${it.st}</div>
+      <div class="scale">${SCALE.map(sc=>`<button type="button" data-id="${it.id}" data-v="${sc[0]}" aria-pressed="${v==sc[0]?'true':'false'}"><span class="num">${sc[0]}</span><span class="lab">${sc[1]}</span></button>`).join('')}</div>
+    </div>`;
+  });
+  html += `</div><div class="actions"><span class="submitbar-msg" id="smsg"></span><button class="submit-btn" id="nextBtn" ${answered()===12?'':'disabled'}>See my results</button></div>`;
+  app.innerHTML = html;
+  app.querySelectorAll('.scale button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const id=b.dataset.id, v=parseInt(b.dataset.v,10);
+      state.scores[id]=v;
+      const sc=b.parentElement;
+      Array.prototype.forEach.call(sc.children,x=>x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      document.getElementById('it-'+id).classList.add('answered');
+      document.getElementById('it-'+id).classList.remove('miss');
+      document.getElementById('pbar').style.width=(answered()/12*100)+'%';
+      document.getElementById('plabel').textContent=answered()+' of 12 answered';
+      const btn=document.getElementById('nextBtn'); btn.disabled = answered()!==12;
+      document.getElementById('smsg').textContent = answered()===12 ? 'All answered.' : '';
+    });
+  });
+  document.getElementById('nextBtn').addEventListener('click',()=>{
+    if(answered()!==12){ ITEMS.forEach(it=>{ if(state.scores[it.id]==null) document.getElementById('it-'+it.id).classList.add('miss'); }); var m=document.querySelector('.item.miss'); if(m)m.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+    state.phase='results'; render();
+  });
+  window.scrollTo(0,0);
+}
+function renderResults(){
+  const total=ITEMS.reduce((s,it)=>s+state.scores[it.id],0);
+  const band=BANDS.find(b=>total>=b.lo&&total<=b.hi)||BANDS[BANDS.length-1];
+  const ordered=ITEMS.slice().sort((a,b)=> state.scores[b.id]-state.scores[a.id]);
+  const cutoff = ordered[2] ? state.scores[ordered[2].id] : 0;
+  const top = ordered.filter((it,i)=> i<3 || state.scores[it.id]===cutoff); // top 3, include ties
+  const topSet=new Set(top.map(t=>t.id));
+  let html = `<div class="results">
+    <div class="results-title">Your Self-Check</div>
+    <div class="score-band">
+      <div class="score-big">${total}<small> / 60</small></div>
+      <div class="band-text"><div class="band-name">${band.name}</div><div class="band-desc">${band.desc}</div></div>
+    </div>
+    <div class="sig-label">Your signature moves, and what to try</div>`;
+  top.forEach(it=>{
+    html += `<div class="sig-card top">
+      <div class="sig-head"><div class="sig-name">${it.name}</div><div class="sig-score">${state.scores[it.id]}<span style="font-size:0.8rem;color:#aaa">/5</span></div></div>
+      <div class="sig-move"><b>Try this:</b> ${it.move}</div>
+    </div>`;
+  });
+  html += `<div class="full-label">All twelve, highest first</div>`;
+  ordered.forEach(it=>{ html += `<div class="fullrow"><span>${it.name}</span><span class="v">${state.scores[it.id]}</span></div>`; });
+  html += `<div class="commit"><strong>Your one commitment.</strong> Name the single tendency that most costs your people, and the one Multiplier move you will practise before the next session. Write it where you will see it.</div>
+    <div class="attrib">Remember that a high score is not a character verdict. These are habits, and habits can be changed one deliberate behaviour at a time.<br><br>Adapted from the work of Liz Wiseman on Multipliers and accidental diminishers (Multipliers, 2010 and 2017; Wiseman and McKeown, Bringing Out the Best in Your People, Harvard Business Review, 2010). Behavioural statements are our own.</div>
+    <button class="save-btn" id="saveBtn">Save my results</button>
+    <div class="save-instructions" id="saveInstructions"></div>
+    <button class="restart-btn begin-again-btn" id="restartBtn2">Begin again</button>
+  </div>`;
+  app.innerHTML = html;
+  document.getElementById('restartBtn2').addEventListener('click',()=>{ reset(); render(); });
+  const saveBtn=document.getElementById('saveBtn'), saveInstructions=document.getElementById('saveInstructions');
+  var isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent), isAnd=/Android/i.test(navigator.userAgent);
+  var title, steps;
+  if(isIOS){ title='On iPhone or iPad'; steps=['Press the side button and volume-up button together.','A thumbnail appears in the bottom-left corner; tap it to view.','It saves automatically to your Photos app.','You can also tap Share to email it to yourself or your facilitator.']; }
+  else if(isAnd){ title='On Android'; steps=['Hold the power and volume-down buttons together for a moment.','Tap the screenshot notification to view or share.','It saves to your Photos or Gallery.','Use Share to email it to yourself or your facilitator.']; }
+  else { title='On a laptop or desktop'; steps=["Use your browser's Print function (Ctrl+P on Windows, Cmd+P on Mac) and choose Save as PDF.",'Or take a screenshot: on Mac use Cmd+Shift+4; on Windows use Win+Shift+S.']; }
+  saveInstructions.innerHTML='<strong>'+title+', how to keep a copy</strong><ol>'+steps.map(s=>'<li>'+s+'</li>').join('')+'</ol><p style="margin-top:10px;color:#666;">Your results are private. Nothing has been sent anywhere; a screenshot simply captures what is on your screen.</p>';
+  saveBtn.onclick=function(){ var open=saveInstructions.style.display==='block'; saveInstructions.style.display=open?'none':'block'; saveBtn.textContent=open?'Save my results':'Close instructions'; if(!open) saveInstructions.scrollIntoView({behavior:'smooth',block:'nearest'}); };
+  window.scrollTo(0,0);
+}
+render();
+</script>
+</body>
+</html>
