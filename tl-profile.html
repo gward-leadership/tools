@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Leadership Profile</title>
+<style>
+  :root {
+    --bg: #f6f2ea;
+    --card: #fffdf8;
+    --ink: #1f2430;
+    --muted: #5e6472;
+    --line: #ddd5c6;
+    --accent: #7a2e2e;
+    --accent-soft: #f0dede;
+    --accent-ink: #ffffff;
+    --calm: #2f5d62;
+    --calm-soft: #dcebec;
+    --track: #e7e0d2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16181d; --card: #1f2229; --ink: #ece8df; --muted: #a5a9b4;
+      --line: #343843; --accent: #e08a8a; --accent-soft: #3a2427; --accent-ink: #16181d;
+      --calm: #7fbcc2; --calm-soft: #1f3335; --track: #2c303a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    line-height: 1.55; font-size: 18px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 16px 80px; }
+  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 6px; font-weight: 600; }
+  h2 { font-size: 1.25rem; margin: 0 0 4px; font-weight: 600; }
+  h3 { font-size: 1.05rem; margin: 0 0 6px; font-weight: 600; }
+  .eyebrow { font: 600 0.72rem/1 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .lede { color: var(--muted); margin: 0 0 20px; }
+  .sans { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+  .key {
+    position: sticky; top: 0; z-index: 5; background: var(--bg);
+    padding: 10px 0; margin-bottom: 8px; border-bottom: 1px solid var(--line);
+    font: 0.78rem/1.35 system-ui, sans-serif; color: var(--muted);
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; text-align: center;
+  }
+  .key b { display: block; color: var(--ink); font-size: 0.95rem; }
+
+  .q { padding: 16px 0 14px; border-bottom: 1px solid var(--line); }
+  .q p { margin: 0 0 10px; }
+  .q .n { font: 600 0.8rem system-ui, sans-serif; color: var(--muted); margin-right: 8px; }
+  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .scale button {
+    font: 600 1.05rem system-ui, sans-serif; padding: 13px 0; min-height: 48px;
+    border-radius: 10px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .scale button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .scale button:focus-visible, .btn:focus-visible { outline: 3px solid var(--calm); outline-offset: 2px; }
+
+  .bar-foot {
+    position: fixed; left: 0; right: 0; bottom: 0; background: var(--card);
+    border-top: 1px solid var(--line); padding: 10px 16px; z-index: 6;
+  }
+  .bar-foot .in { max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 12px; justify-content: space-between; }
+  .count { font: 0.9rem system-ui, sans-serif; color: var(--muted); }
+  .btn {
+    font: 600 1rem system-ui, sans-serif; padding: 12px 20px; border-radius: 10px; border: 0;
+    background: var(--accent); color: var(--accent-ink); cursor: pointer; min-height: 46px;
+  }
+  .btn[disabled] { opacity: .35; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 18px; margin: 18px 0; }
+  .panel .tag { display: inline-block; font: 700 0.68rem/1 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; padding: 5px 8px; border-radius: 6px; margin-bottom: 10px; }
+  .panel.grow .tag { background: var(--accent-soft); color: var(--accent); }
+  .panel.exam .tag { background: var(--calm-soft); color: var(--calm); }
+
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; margin: 12px 0; font-family: system-ui, sans-serif; font-size: 0.92rem; }
+  .row .nm { font-weight: 500; }
+  .row .sc { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .track { grid-column: 1 / -1; height: 9px; background: var(--track); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--muted); border-radius: 5px; }
+  .grow .row.hit .fill { background: var(--accent); }
+  .exam .row.hit .fill { background: var(--calm); }
+  .row.hit .nm { font-weight: 700; }
+  .flag { font: 700 0.66rem system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; }
+  .grow .flag { color: var(--accent); } .exam .flag { color: var(--calm); }
+
+  .focus { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 16px; }
+  .focus .big { font-size: 1.5rem; line-height: 1.25; margin: 2px 0 6px; font-weight: 600; }
+  .focus .gist { color: var(--muted); margin: 0 0 12px; }
+  .focus .stance { margin: 0 0 12px; font-style: italic; }
+  .focus ol { margin: 0; padding-left: 1.2rem; }
+  .focus li { margin: 0 0 10px; }
+  .tie { font: 0.9rem system-ui, sans-serif; color: var(--muted); margin: 0 0 8px; }
+  .focus + .focus { margin-top: 22px; }
+
+  .room { background: var(--ink); color: var(--bg); border-radius: 14px; padding: 18px; margin: 18px 0; }
+  .room h3 { margin-bottom: 8px; }
+  .room ol { margin: 0; padding-left: 1.2rem; }
+  .room li { margin: 0 0 8px; }
+  .fine { font: 0.82rem/1.5 system-ui, sans-serif; color: var(--muted); margin-top: 18px; }
+  [hidden] { display: none !important; }
+  @media print { .bar-foot, .key { display: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="intro">
+    <div class="eyebrow">Leadership development</div>
+    <h1>Your leadership profile</h1>
+    <p class="lede">Twenty-one statements. For each, judge how frequently it fits you, using your first instinct. This takes about four minutes. Nothing you enter leaves your phone.</p>
+  </section>
+
+  <section id="quiz" aria-label="Questionnaire">
+    <div class="key" aria-hidden="true">
+      <div><b>0</b>Not at all</div><div><b>1</b>Once in a while</div><div><b>2</b>Sometimes</div><div><b>3</b>Fairly often</div><div><b>4</b>Frequently if not always</div>
+    </div>
+    <div id="items"></div>
+  </section>
+
+  <section id="result" hidden aria-live="polite"></section>
+
+</div>
+
+<div class="bar-foot" id="foot">
+  <div class="in">
+    <span class="count" id="count">0 of 21 answered</span>
+    <button class="btn" id="go" disabled>Show my profile</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var ITEMS = [
+    "I make others feel good to be around me",
+    "I express with a few simple words what we could and should do",
+    "I enable others to think about old problems in new ways",
+    "I help others develop themselves",
+    "I tell others what to do so they can be rewarded for their work",
+    "I am satisfied when others meet agreed-upon standards",
+    "I am content to let others continue working as they always do",
+    "Others have faith in me",
+    "I provide appealing images about what we can do",
+    "I provide others with new ways of looking at puzzling things",
+    "I let others know how I think they are doing",
+    "I provide recognition/rewards when others reach their goals",
+    "As long as things are working, I do not try to change anything",
+    "Whatever others want to do is okay with me",
+    "Others are proud to be associated with me",
+    "I help others find meaning in their work",
+    "I get others to rethink ideas that they had never questioned before",
+    "I give personal attention to team members who seem dejected",
+    "I call attention to what others can get for what they accomplish",
+    "I tell others the standards they have to know to carry out their work",
+    "I ask no more of others than what is absolutely essential"
+  ];
+
+  var TRANSFORMATIONAL = [
+    { id: "II", name: "Idealised influence", items: [1, 8, 15],
+      gist: "Being someone others trust, feel proud to be associated with, and feel good around.",
+      prompts: [
+        "When did you last do something costly in order to be consistent with what you say you stand for? Who saw it?",
+        "If your team described what they are proud of in being led by you, would it be what you would want them to say?",
+        "Which decision this month would have shown your values, had you said them aloud?"
+      ] },
+    { id: "IM", name: "Inspirational motivation", items: [2, 9, 16],
+      gist: "Giving people a clear picture of where you are going, and why it matters to them.",
+      prompts: [
+        "What is the shortest honest sentence that says where this team is going and why it matters? Try it on your partner now.",
+        "Where do you explain the task but leave out the meaning?",
+        "What picture of the future would lead your people to choose the harder option without being asked?"
+      ] },
+    { id: "IS", name: "Intellectual stimulation", items: [3, 10, 17],
+      gist: "Getting people to question assumptions and see old problems differently.",
+      prompts: [
+        "Which assumption in your team has gone unquestioned for over a year, and who benefits from that?",
+        "When did someone last disagree with you in the room? What did you do with it?",
+        "Which old problem would you hand to your least experienced person, to see what a fresh eye makes of it?"
+      ] },
+    { id: "IC", name: "Individualised consideration", items: [4, 11, 18],
+      gist: "Treating people as individuals: developing them, telling them how they are doing, noticing when they struggle.",
+      prompts: [
+        "Who have you not had a real conversation with, about them and not the work, in the last month?",
+        "Whose development are you postponing because they are performing well?",
+        "What do people bring to you when they are struggling, and what do they carefully keep from you?"
+      ] }
+  ];
+
+  var OTHER = [
+    { id: "CR", name: "Contingent reward", items: [5, 12, 19],
+      gist: "Exchanging recognition and reward for performance.",
+      stance: "This is the least problematic of the three, and the research generally finds it helps. The question is not whether to abandon it but what it is crowding out, and how far you could reduce your reliance on it as your main lever.",
+      prompts: [
+        "What do your people do because it is rewarded that they might do anyway, for the sake of the work?",
+        "Where has an incentive narrowed what people pay attention to?",
+        "If you reduced your reliance on reward as the main lever, what would you put in its place?"
+      ] },
+    { id: "MBE", name: "Management by exception", items: [6, 13, 20],
+      gist: "Leaving things alone while they meet the standard, and stepping in when they do not.",
+      stance: "Used sparingly it keeps standards clear. Used as a default it teaches people that the safe course is to stay unnoticed. Discuss how you would lower it.",
+      prompts: [
+        "What are you watching for, and what does your watching teach people about taking risks?",
+        "If you stopped checking for a month, what would happen? What does your answer tell you?",
+        "Which standards could you hand over, so that people hold one another to them?"
+      ] },
+    { id: "LF", name: "Laissez-faire leadership", items: [7, 14, 21],
+      gist: "Staying out of the way: letting things drift, deferring to whatever others prefer.",
+      stance: "This is the one the research most consistently links to poorer outcomes, because absence is still felt. Discuss how you would lower it.",
+      prompts: [
+        "Where are you absent when you are most needed, and who bears the cost?",
+        "Is “whatever you want is fine” generosity or avoidance? Which difficult conversation is it sparing you?",
+        "Which one decision have you been leaving to drift that you could make this week?"
+      ] }
+  ];
+
+  var answers = new Array(21);
+  var itemsEl = document.getElementById("items");
+  var countEl = document.getElementById("count");
+  var goBtn = document.getElementById("go");
+
+  ITEMS.forEach(function (text, i) {
+    var q = document.createElement("div");
+    q.className = "q";
+    var p = document.createElement("p");
+    p.innerHTML = '<span class="n">' + (i + 1) + '</span>';
+    p.appendChild(document.createTextNode(text));
+    q.appendChild(p);
+    var scale = document.createElement("div");
+    scale.className = "scale";
+    scale.setAttribute("role", "group");
+    scale.setAttribute("aria-label", "Statement " + (i + 1));
+    for (var v = 0; v <= 4; v++) {
+      (function (v) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = v; b.setAttribute("aria-pressed", "false");
+        b.addEventListener("click", function () {
+          answers[i] = v;
+          Array.prototype.forEach.call(scale.children, function (c, k) { c.setAttribute("aria-pressed", String(k === v)); });
+          update();
+          var next = q.nextElementSibling;
+          if (next && answers[i + 1] === undefined) {
+            window.scrollTo({ top: next.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+          }
+        });
+        scale.appendChild(b);
+      })(v);
+    }
+    q.appendChild(scale);
+    itemsEl.appendChild(q);
+  });
+
+  function answered() { var n = 0; for (var i = 0; i < 21; i++) if (answers[i] !== undefined) n++; return n; }
+  function update() {
+    var n = answered();
+    countEl.textContent = n + " of 21 answered";
+    goBtn.disabled = n < 21;
+  }
+
+  function score(f) { return f.items.reduce(function (s, n) { return s + answers[n - 1]; }, 0); }
+  function band(s) { return s >= 9 ? "High" : s >= 5 ? "Moderate" : "Low"; }
+  function esc(s) { return s.replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+
+  function rows(list, hitIds, flagText) {
+    return list.map(function (f) {
+      var hit = hitIds.indexOf(f.id) > -1;
+      return '<div class="row' + (hit ? ' hit' : '') + '">' +
+        '<span class="nm">' + f.name + (hit ? '<span class="flag">' + flagText + '</span>' : '') + '</span>' +
+        '<span class="sc">' + f.s + ' of 12 &middot; ' + band(f.s) + '</span>' +
+        '<div class="track" role="img" aria-label="' + f.name + ' ' + f.s + ' out of 12"><div class="fill" style="width:' + (f.s / 12 * 100) + '%"></div></div></div>';
+    }).join("");
+  }
+
+  function focusBlock(f, kind) {
+    var h = '<div class="focus">';
+    h += '<div class="eyebrow">' + (kind === "grow" ? "The pillar to develop" : "The dimension to examine") + '</div>';
+    h += '<div class="big">' + f.name + ' &middot; ' + f.s + ' of 12</div>';
+    h += '<p class="gist">' + f.gist + '</p>';
+    if (f.stance) h += '<p class="stance">' + f.stance + '</p>';
+    h += '<h3>For your pair</h3><ol>' + f.prompts.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join("") + '</ol></div>';
+    return h;
+  }
+
+  goBtn.addEventListener("click", function () {
+    TRANSFORMATIONAL.forEach(function (f) { f.s = score(f); });
+    OTHER.forEach(function (f) { f.s = score(f); });
+
+    var minT = Math.min.apply(null, TRANSFORMATIONAL.map(function (f) { return f.s; }));
+    var lows = TRANSFORMATIONAL.filter(function (f) { return f.s === minT; });
+    var maxO = Math.max.apply(null, OTHER.map(function (f) { return f.s; }));
+    var highs = OTHER.filter(function (f) { return f.s === maxO; });
+
+    var h = '<div class="eyebrow">Your profile</div><h1>Two things to take into the room</h1>';
+    h += '<p class="lede">Self-ratings tend to flatter. Treat these as a starting hypothesis, not a verdict.</p>';
+
+    // Panel 1
+    h += '<div class="panel grow"><span class="tag">Transformational</span><h2>Four pillars</h2>';
+    h += rows(TRANSFORMATIONAL, lows.map(function (f) { return f.id; }), "Lowest");
+    if (lows.length > 1) h += '<p class="tie">You have a tie for lowest. Choose the one you most want to work on.</p>';
+    if (minT >= 9) h += '<p class="tie">Even your lowest pillar scores high. Take it as the place where your relative edge is smallest, and ask someone who works for you whether they agree.</p>';
+    h += lows.map(function (f) { return focusBlock(f, "grow"); }).join("");
+    h += '</div>';
+
+    // Panel 2
+    h += '<div class="panel exam"><span class="tag">Transactional and passive</span><h2>Three dimensions</h2>';
+    h += rows(OTHER, highs.map(function (f) { return f.id; }), "Highest");
+    if (highs.length > 1) h += '<p class="tie">You have a tie for highest. Choose the one you most recognise in yourself.</p>';
+    h += highs.map(function (f) { return focusBlock(f, "exam"); }).join("");
+    h += '</div>';
+
+    h += '<div class="room"><h3>In the room</h3><ol>' +
+      '<li>Pair up. Say your two names aloud: the pillar you will develop and the dimension you will examine.</li>' +
+      '<li>Take three minutes each on the prompts. The listener asks only questions, offers no advice.</li>' +
+      '<li>Finish by saying one thing you will do differently in the next two weeks, and to whom you will say it.</li></ol></div>';
+
+    h += '<p class="fine">Scores are the sum of three items per factor (0 to 12): High 9 to 12, Moderate 5 to 8, Low 0 to 4. Bands and structure follow the seven-factor Full Range model of leadership. Nothing is stored or transmitted.</p>';
+    h += '<p><button class="btn ghost" id="again">Start again</button></p>';
+
+    var res = document.getElementById("result");
+    res.innerHTML = h;
+    res.hidden = false;
+    document.getElementById("quiz").hidden = true;
+    document.getElementById("intro").hidden = true;
+    document.getElementById("foot").hidden = true;
+    window.scrollTo(0, 0);
+    document.getElementById("again").addEventListener("click", function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>
