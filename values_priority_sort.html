@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Choosing What Matters — A Values Sort</title>
+<title>Choosing What Matters, A Values Sort</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -328,7 +328,7 @@
 <div class="header">
   <div>
     <h1>Choosing What Matters</h1>
-    <p>A values-sorting exercise — tap to choose, no dragging required</p>
+    <p>A values-sorting exercise, tap to choose, no dragging required</p>
   </div>
   <button class="restart-link" id="restartBtn">Start over</button>
 </div>
@@ -348,7 +348,7 @@ const VALUES = [
   {id:'aesthetics', name:'Aesthetics', statement:'Music, art and beautiful experiences are essential for my well-being.'},
   {id:'exploration', name:'Exploration', statement:'I love to learn, try new things, or travel to far-flung places.'},
   {id:'achievement', name:'Achievement', statement:'I like to be competent, achieve and succeed in what I do.'},
-  {id:'security', name:'Security & Stability', statement:'Having a stable, secure foundation — financially and otherwise — is important to me.'},
+  {id:'security', name:'Security & Stability', statement:'Having a stable, secure foundation, financially and otherwise, is important to me.'},
   {id:'service', name:'Service', statement:'I like to get involved in social causes and make a societal contribution.'},
   {id:'spirituality', name:'Spirituality', statement:'Connecting to something greater than myself gives my life meaning.'},
   {id:'health', name:'Health', statement:'Being in good physical and mental health is one of my priorities.'},
@@ -401,7 +401,7 @@ function renderIntro(){
   app.innerHTML = `
     <div class="instructions">
       There are 21 statements below, each describing something people commonly value.
-      Work through the three steps below — your first instinct is usually the most truthful one.
+      Work through the three steps below, your first instinct is usually the most truthful one.
     </div>
     <div class="container">
       <h1 class="page-title">Before you begin</h1>
@@ -537,14 +537,15 @@ function renderResults(){
   app.innerHTML = `
     <div class="results-container">
       <div class="results-title">My Values Profile</div>
-      <div class="results-subtitle">This is a snapshot of today, not a permanent ranking — values shift with context and season of life.</div>
+      <div class="results-subtitle">This is a snapshot of today, not a permanent ranking, values shift with context and season of life.</div>
       ${rankCards}
       <div class="bottom-label">Sits at the bottom, for now</div>
       <div class="rank-card bottom">
         <div class="rank-badge">21</div>
         <div><div class="value-name">${bv.name}</div><div class="value-text">${bv.statement}</div></div>
       </div>
-      <div class="reflection-note">Notice what surprised you. Was there a value you expected to rank higher — or lower? What does that tell you about how you're living right now versus how you want to live?</div>
+      <div class="reflection-note" style="font-style:normal;"><span style="display:block;font-weight:bold;color:#1C1C1C;margin-bottom:10px;">What are the values you hold most dear and how do they inform and show up in your leadership?</span>Discuss this with your partner and be prepared to report back any themes that you notice.</div>
+      <button class="save-btn" id="emailBtn" style="background:#1C1C1C;">✉️  Email this to myself</button>
       <button class="save-btn" id="saveBtn">📋  Save My Results</button>
       <div class="save-instructions" id="saveInstructions"></div>
       <button class="restart-btn begin-again-btn" id="restartBtn2">Begin Again</button>
@@ -552,6 +553,14 @@ function renderResults(){
   `;
 
   document.getElementById('restartBtn2').addEventListener('click', ()=>{ resetState(); render(); });
+
+  document.getElementById('emailBtn').onclick = function(){
+    var lines = ['My Values Profile','','My top five values, in order:'];
+    state.ranked.forEach(function(id,i){ var v=byId(id); lines.push((i+1)+'. '+v.name+': '+v.statement); });
+    lines.push('','Sits at the bottom, for now:','21. '+bv.name+': '+bv.statement);
+    lines.push('','Reflection: What are the values I hold most dear, and how do they inform and show up in my leadership?');
+    window.location.href = 'mailto:?subject='+encodeURIComponent('My Values Profile')+'&body='+encodeURIComponent(lines.join(String.fromCharCode(10)));
+  };
 
   const saveBtn = document.getElementById('saveBtn');
   const saveInstructions = document.getElementById('saveInstructions');
@@ -562,7 +571,7 @@ function renderResults(){
     deviceTitle = 'On iPhone or iPad';
     deviceSteps = [
       'Press the side button and volume-up button at the same time (iPhone X and later), or the home button and side button together (older iPhones).',
-      'A thumbnail appears in the bottom-left corner — tap it to view and annotate if you wish.',
+      'A thumbnail appears in the bottom-left corner, tap it to view and annotate if you wish.',
       'The screenshot saves automatically to your Photos app.',
       'You can also tap Share and email it to yourself or your facilitator.'
     ];
@@ -570,7 +579,7 @@ function renderResults(){
     deviceTitle = 'On Android';
     deviceSteps = [
       'Hold the power button and volume-down button simultaneously for one to two seconds.',
-      'A screenshot notification appears — tap it to view or share.',
+      'A screenshot notification appears, tap it to view or share.',
       'The image saves to your Photos or Gallery app.',
       'Use the Share option to email it to yourself or your facilitator directly.'
     ];
@@ -584,9 +593,9 @@ function renderResults(){
   }
   var stepsHTML = deviceSteps.map(function(s){ return '<li>'+s+'</li>'; }).join('');
   saveInstructions.innerHTML =
-    '<strong>'+deviceTitle+' — Screenshot Instructions</strong>' +
+    '<strong>'+deviceTitle+', Screenshot Instructions</strong>' +
     '<ol>'+stepsHTML+'</ol>' +
-    '<p style="margin-top:10px; color:#666;">Your results are private — nothing has been sent anywhere. ' +
+    '<p style="margin-top:10px; color:#666;">Your results are private, nothing has been sent anywhere. ' +
     'A screenshot captures exactly what is on your screen right now. You can share it with a facilitator or keep it for yourself.</p>';
   saveBtn.onclick = function(){
     var open = saveInstructions.style.display === 'block';
