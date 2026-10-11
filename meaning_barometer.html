@@ -484,6 +484,7 @@ function renderResults(){
       <div class="section-label">The Grant Study Check</div>
       ${grantHTML}
 
+      <button class="save-btn" id="emailBtn" style="background:#1C1C1C;">✉️  Email this to myself</button>
       <button class="save-btn" id="saveBtn">📋  Save My Results</button>
       <div class="save-instructions" id="saveInstructions"></div>
       <button class="restart-btn begin-again-btn" id="restartBtn2">Begin Again</button>
@@ -495,6 +496,23 @@ function renderResults(){
   }, 150);
 
   document.getElementById('restartBtn2').addEventListener('click', ()=>{ resetState(); render(); });
+
+  document.getElementById('emailBtn').onclick = function(){
+    var lines = ['My Meaning Profile','','The Barometer (1 to 7):'];
+    LEVERS.map(function(l){ return {name:l.name, s:state.scores[l.id]}; })
+          .sort(function(a,b){ return b.s-a.s; })
+          .forEach(function(r){ lines.push(r.name+': '+r.s+'/7'); });
+    lines.push('','Where to focus:');
+    if(allIssues.length){ allIssues.forEach(function(i){ lines.push('- '+i.tag+': '+i.text); }); }
+    else { lines.push('- No strong signals of reactive patterns or low levers right now. The more useful question may be which of these five to deepen next.'); }
+    lines.push('','The Grant Study check:');
+    var g;
+    if(state.grantChoice==='achievement'){ g='Most of your time and energy currently goes toward achievement and output. The Grant Study found relationship quality, not achievement, most strongly predicts a well-lived life. Consider redirecting more time toward deepening relationships.'; }
+    else if(state.grantChoice==='relationships'){ g='Your time and energy already lean toward relationships and connection, which is what the Grant Study found matters most. Worth protecting that investment deliberately.'; }
+    else { g='You describe a fairly balanced investment of time and energy. The Grant Study found relationship quality the strongest predictor of a well-lived life, a useful check as you decide where balance tips next.'; }
+    lines.push(g);
+    window.location.href = 'mailto:?subject='+encodeURIComponent('My Meaning Profile')+'&body='+encodeURIComponent(lines.join(String.fromCharCode(10)));
+  };
 
   const saveBtn = document.getElementById('saveBtn');
   const saveInstructions = document.getElementById('saveInstructions');
