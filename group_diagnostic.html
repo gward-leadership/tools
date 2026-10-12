@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Group Diagnostic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Libre+Franklin:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#F4F2EE; --panel:#FBFAF7; --ink:#232021; --muted:#6F6A64; --faint:#8B857D;
+  --line:#DED9D1; --slate:#3E5C76; --slate-soft:#8CA6C0; --clay:#BC5B3C; --red:#E1352A;
+  --band:#E7E1D7; --shadow:rgba(40,36,32,.10);
+  --disp:'Fraunces',Georgia,'Times New Roman',serif;
+  --body:'Libre Franklin','Helvetica Neue',Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#1A1917; --panel:#232120; --ink:#F1ECE4; --muted:#A69F95; --faint:#8A837A;
+  --line:#39352F; --slate:#8CA6C0; --slate-soft:#5B7A99; --clay:#D98A6E; --red:#F0574C;
+  --band:#322E28; --shadow:rgba(0,0,0,.4); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --ground:#1A1917; --panel:#232120; --ink:#F1ECE4; --muted:#A69F95; --faint:#8A837A;
+  --line:#39352F; --slate:#8CA6C0; --slate-soft:#5B7A99; --clay:#D98A6E; --red:#F0574C;
+  --band:#322E28; --shadow:rgba(0,0,0,.4); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+.wrap{max-width:760px;margin:0 auto;padding:28px 18px 96px}
+.wrap.dash{max-width:1120px}
+h1,h2,h3{font-family:var(--disp);font-weight:600;text-wrap:balance;margin:0}
+.kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);font-weight:600}
+.lede{color:var(--muted);margin:10px 0 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 20px;box-shadow:0 1px 2px var(--shadow)}
+.stack>*+*{margin-top:18px}
+button{font-family:var(--body);cursor:pointer}
+.btn{background:var(--slate);color:#fff;border:none;border-radius:9px;padding:13px 20px;font-size:16px;font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--slate);border:1.5px solid var(--slate)}
+.btn.red{background:var(--red);color:#fff}
+.btn.sm{padding:9px 14px;font-size:14px}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.choice{grid-template-columns:1fr}}
+.choice a{display:block;text-decoration:none;color:inherit}
+.tile{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--panel);height:100%;transition:border-color .15s,transform .15s}
+.tile:hover{border-color:var(--slate);transform:translateY(-2px)}
+.tile h3{font-size:20px}
+.tile p{color:var(--muted);margin:8px 0 0;font-size:14px}
+label.fld{display:block;font-weight:600;font-size:14px;margin:0 0 7px}
+select,input[type=text]{width:100%;font-family:var(--body);font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:var(--ground);color:var(--ink)}
+.section-h{display:flex;align-items:baseline;gap:10px;margin:34px 2px 14px}
+.section-h .n{font-family:var(--disp);font-size:15px;color:#fff;background:var(--clay);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;font-weight:600}
+.section-h h2{font-size:22px}
+.q{padding:18px 0;border-bottom:1px solid var(--line)}
+.q:last-child{border-bottom:none}
+.q .qt{font-size:15.5px;margin:0 0 12px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale button{border:1px solid var(--line);background:var(--ground);color:var(--muted);border-radius:8px;padding:9px 4px;font-size:12.5px;font-weight:600;line-height:1.25;display:flex;flex-direction:column;align-items:center;gap:3px}
+.scale button .num{font-family:var(--disp);font-size:16px;color:var(--ink)}
+.scale button[aria-pressed=true]{background:var(--slate);border-color:var(--slate);color:#fff}
+.scale button[aria-pressed=true] .num{color:#fff}
+.q.miss{outline:2px solid var(--red);outline-offset:8px;border-radius:8px}
+.srow{display:flex;align-items:center;gap:14px}
+.srow input[type=range]{flex:1;accent-color:var(--slate)}
+.sval{font-family:var(--disp);font-size:20px;min-width:30px;text-align:center;color:var(--slate);font-weight:600}
+.sval.un{color:var(--faint)}
+.sdesc{color:var(--muted);font-size:13px;margin:2px 0 10px}
+.bar-legend{display:flex;justify-content:space-between;color:var(--faint);font-size:11px;margin-top:4px}
+.submitbar{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:12px;align-items:center;justify-content:space-between;z-index:20}
+.submitbar .msg{font-size:13px;color:var(--muted)}
+.result .big{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.chip{border:1px solid var(--line);border-radius:10px;padding:10px 12px;flex:1 1 120px;background:var(--ground)}
+.chip .lab{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.chip .v{font-family:var(--disp);font-size:24px;font-weight:600}
+.tag{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+.dhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;justify-content:space-between}
+.count{font-family:var(--disp);font-weight:700}
+.count b{font-size:34px;color:var(--slate)}
+.metric{padding:13px 0;border-bottom:1px solid var(--line)}
+.metric:last-child{border-bottom:none}
+.metric .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:7px}
+.metric .name{font-weight:600;font-size:15px}
+.metric .name small{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.metric .avg{font-family:var(--disp);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.metric .avg .rng{font-family:var(--body);font-size:12px;color:var(--muted);margin-left:6px}
+.track{position:relative;height:16px;background:var(--band);border-radius:8px}
+.range{position:absolute;top:0;height:16px;background:var(--slate-soft);opacity:.5;border-radius:8px}
+.fill{position:absolute;top:0;height:16px;background:var(--slate);border-radius:8px}
+.mean{position:absolute;top:-3px;width:3px;height:22px;background:var(--red);border-radius:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.ftable{width:100%;border-collapse:collapse;font-size:14px}
+.ftable th,.ftable td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.ftable th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+.ftable td.num,.ftable th.num{text-align:right}
+.waiting{text-align:center;color:var(--muted);padding:40px 10px}
+.pulse{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:7px;animation:p 1.6s infinite}
+@keyframes p{0%,100%{opacity:.3}50%{opacity:1}}
+.hint{font-size:13px;color:var(--muted);background:var(--ground);border:1px dashed var(--line);border-radius:10px;padding:12px 14px}
+.toplink{background:none;border:none;color:var(--slate);font-weight:600;font-size:13px;padding:0}
+.codebox{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.codebox>div{flex:1 1 200px}
+.share{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.qr{background:#fff;padding:12px;border-radius:10px;border:1px solid var(--line)}
+.share .link{font-family:var(--body);font-size:14px;word-break:break-all;color:var(--slate)}
+.codepill{font-family:var(--disp);font-weight:700;font-size:20px;letter-spacing:.04em;color:var(--clay)}
+code.k{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--ground);border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:13px}
+@media print{.submitbar{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+"use strict";
+
+/* ============================================================
+   STEP 1 OF SETUP: paste your Firebase config between the braces
+   (from Firebase console > Project settings > Your apps > SDK setup).
+   Leave the rest of the file untouched.
+   ============================================================ */
+var firebaseConfig = {
+  apiKey: "AIzaSyDUrJVDf3znSrtQa15CYYOBMeLllouG4Jk",
+  authDomain: "wargaming-bc98f.firebaseapp.com",
+  databaseURL: "https://wargaming-bc98f-default-rtdb.firebaseio.com",
+  projectId: "wargaming-bc98f",
+  storageBucket: "wargaming-bc98f.firebasestorage.app",
+  messagingSenderId: "377399570906",
+  appId: "1:377399570906:web:89bde9317994cbf77890e3"
+};
+/* ============================================================ */
+
+var CONFIGURED = firebaseConfig.databaseURL.indexOf("PASTE_") === -1;
+var db=null, auth=null, connected=false, dashReadErr=null, authErr=null;
+if(CONFIGURED){
+  try{
+    firebase.initializeApp(firebaseConfig);
+    db=firebase.database();
+    try{ auth=firebase.auth(); }catch(e){ auth=null; }
+    db.ref(".info/connected").on("value",function(s){connected=!!s.val(); if(view==="dash")paintConn();});
+  }catch(e){ db=null; }
+}
+
+/* ---------- instruments ---------- */
+var DYS=["Trust","Conflict","Commitment","Accountability","Results"];
+var DYS_SUB={Trust:"freedom to be vulnerable",Conflict:"willingness to debate openly",Commitment:"clarity and buy-in on decisions",Accountability:"holding one another to standards",Results:"collective over individual wins"};
+var LENC=[
+ ["Conflict","Group members are passionate and unguarded in their discussion of issues."],
+ ["Accountability","Group members call out one another's deficiencies or unproductive behaviours."],
+ ["Commitment","Group members know what their peers are working on and how they contribute to the collective good of the group."],
+ ["Trust","Group members quickly and genuinely apologise to one another when they say or do something damaging to the group."],
+ ["Results","Group members willingly make sacrifices in their own areas for the good of the group."],
+ ["Trust","Group members openly admit their weaknesses and mistakes."],
+ ["Conflict","Group meetings are compelling, and not boring."],
+ ["Commitment","Group members leave meetings confident that their peers are committed to the decisions agreed, even if there was initial disagreement."],
+ ["Results","Morale is significantly affected by the failure to achieve group goals."],
+ ["Conflict","During meetings, the most important and difficult issues are put on the table to be resolved."],
+ ["Accountability","Group members are deeply concerned about the prospect of letting down their peers."],
+ ["Trust","Group members know one another's personal lives and are comfortable discussing them."],
+ ["Commitment","Group members end discussions with clear and specific resolutions and calls to action."],
+ ["Accountability","Group members challenge one another about their plans and approaches."],
+ ["Results","Group members are slow to seek credit for their own contributions, but quick to point out those of others."]
+];
+var SCALE=[["1","Never"],["2","Rarely"],["3","Sometimes"],["4","Often"],["5","Always"]];
+var STR=[
+ ["Compelling direction","We share a clear, meaningful purpose that pulls us forward."],
+ ["Real group","We function as a genuine leadership group, not a group who happens to share a number of managers."],
+ ["Psychological safety","We can take risks and speak candidly without fear of being punished."],
+ ["Trust and vulnerability","We are open about weaknesses and assume good intent in each other."],
+ ["Productive conflict","We debate ideas openly and disagree well, without it turning personal."],
+ ["Commitment and alignment","We commit to decisions and leave the room speaking with one voice."],
+ ["Accountability","We hold one another to high standards, peer to peer."],
+ ["Results focus","We put collective outcomes above individual or functional wins."],
+ ["Cross-functional collaboration","We work across silos rather than defend our own turf."],
+ ["Communication","Information flows openly, clearly and in good time."]
+];
+var FUNCTIONS=["Engineering","Game Design","Art","Production","Publishing & Marketing","Analytics & Data","Central / Operations","Other"];
+
+/* ---------- state ---------- */
+function getParam(k){try{return new URLSearchParams(location.search).get(k);}catch(e){return null;}}
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+var session = (getParam("s")||"").toLowerCase().replace(/[^a-z0-9_-]/g,"").slice(0,24) || "";
+var view="home", unsub=null;
+var myAnswers={fn:null,L:new Array(15).fill(null),S:new Array(10).fill(null)};
+var mySub=null;
+var DEMO=false, demoSubs=[], demoSeeded=false;
+function seedDemo(){
+  if(demoSeeded) return; demoSeeded=true;
+  function h(a,b,c,d,e){return {Trust:a,Conflict:b,Commitment:c,Accountability:d,Results:e};}
+  demoSubs=[
+    {fn:"Engineering",health:h(3.3,2.7,3.0,2.3,3.7),str:[7,6,5,6,4,6,5,7,4,5]},
+    {fn:"Publishing & Marketing",health:h(4.3,4.0,4.3,3.7,4.3),str:[9,8,8,8,7,8,7,8,7,8]},
+    {fn:"Game Design",health:h(3.7,3.3,3.3,3.0,3.7),str:[7,7,6,7,6,6,6,7,5,6]},
+    {fn:"Art",health:h(4.0,2.0,3.7,2.7,4.0),str:[8,7,4,7,3,7,5,7,4,6]}
+  ].concat(demoSubs);
+}
+function showPreviewRibbon(){
+  if(document.getElementById("previbbon")) return;
+  var r=el('<div id="previbbon" style="position:fixed;top:0;left:0;right:0;background:var(--clay);color:#fff;text-align:center;font-size:12.5px;font-weight:600;padding:6px 10px;z-index:60;letter-spacing:.03em">PREVIEW MODE &middot; example data, nothing is saved and nothing syncs between devices</div>');
+  document.body.appendChild(r);
+  document.body.style.paddingTop="30px";
+}
+
+function computeHealth(L){
+  var sums={},counts={}; DYS.forEach(function(d){sums[d]=0;counts[d]=0;});
+  LENC.forEach(function(it,i){if(L[i]!=null){sums[it[0]]+=L[i];counts[it[0]]++;}});
+  var o={}; DYS.forEach(function(d){o[d]=counts[d]?+(sums[d]/counts[d]).toFixed(2):null;}); return o;
+}
+
+var app=document.getElementById("app");
+function el(h){var d=document.createElement("div");d.innerHTML=h;return d.firstElementChild;}
+function participantURL(code){return location.origin+location.pathname+"?s="+encodeURIComponent(code);}
+
+/* ---------- SETUP NOTICE ---------- */
+function renderSetup(){
+  app.innerHTML="";
+  var w=el('<div class="wrap stack"></div>');
+  w.appendChild(el('<div><div class="kicker">One-time setup</div><h1 style="font-size:30px;margin-top:8px">Almost ready</h1>'+
+   '<p class="lede">This tool needs a free Firebase database to pool responses. Paste your project config into the top of this file, then re-upload it. The chat message that came with this file has the step-by-step.</p></div>'));
+  w.appendChild(el('<div class="card"><h3 style="font-size:16px">What to paste</h3>'+
+   '<p class="sdesc">Open this file in any text editor and replace the placeholder <code class="k">firebaseConfig</code> block near the top with the one Firebase gives you under Project settings, Your apps, SDK setup and configuration. Nothing else needs changing.</p></div>'));
+  var pv=el('<div class="card" style="border-style:dashed"><h3 style="font-size:16px">Just want to see the questions first?</h3>'+
+   '<p class="sdesc">Preview the whole thing now with no database. You can read every question, submit, and see how the projector dashboard looks with example data. Nothing is saved.</p></div>');
+  var pb=el('<button class="btn" style="margin-top:6px">Preview without a database</button>');
+  pb.onclick=function(){ DEMO=true; if(!session) session="preview"; showPreviewRibbon(); renderHome(); };
+  pv.appendChild(pb);
+  w.appendChild(pv);
+  app.appendChild(w);
+}
+
+/* ---------- HOME ---------- */
+function renderHome(){
+  view="home"; if(unsub){unsub();unsub=null;}
+  app.innerHTML="";
+  var w=el('<div class="wrap stack"></div>');
+  w.appendChild(el('<div><div class="kicker">Wargaming &middot; Leader of Leaders</div>'+
+   '<h1 style="font-size:34px;margin-top:8px">Group Diagnostic</h1>'+
+   '<p class="lede">A live reading of how this cross-functional leadership group sees itself. Everyone answers on their own device; the averages and their ranges appear on the screen at the front.</p></div>'));
+  var ch=el('<div class="choice"></div>');
+  var a=el('<a href="javascript:void(0)"></a>');
+  a.appendChild(el('<div class="tile"><h3>Take the assessment</h3><p>Ten minutes, anonymous. Two short parts on how the group works together.</p></div>'));
+  a.onclick=function(){ if(session){renderForm();} else {promptCode("participant");} };
+  var b=el('<a href="javascript:void(0)"></a>');
+  b.appendChild(el('<div class="tile"><h3>Facilitator &middot; projector view</h3><p>Live averages, ranges and a QR code for the room. Put this on the big screen.</p></div>'));
+  b.onclick=function(){ promptCode("facilitator"); };
+  ch.appendChild(a); ch.appendChild(b);
+  w.appendChild(ch);
+  w.appendChild(el('<div class="hint">Everyone rates the same thing: this leadership group as a whole. There are no right answers, and no one sees individual responses. What the room is looking for is where you agree and where you diverge.</div>'));
+  app.appendChild(w);
+}
+
+/* ---------- CODE PROMPT ---------- */
+function promptCode(role){
+  app.innerHTML="";
+  var w=el('<div class="wrap stack"></div>');
+  var isFac=role==="facilitator";
+  w.appendChild(el('<div><div class="kicker">Session code</div><h1 style="font-size:28px;margin-top:8px">'+(isFac?"Open a session":"Join the session")+'</h1>'+
+   '<p class="lede">'+(isFac?"Pick a short code for this cohort, for example wg-oct or leaders1. Share it, or the QR code, with the room. Reusing an old code shows that session’s data, so use a fresh one for a new group.":"Enter the code the facilitator has put on the screen.")+'</p></div>'));
+  var card=el('<div class="card"></div>');
+  var box=el('<div class="codebox"></div>');
+  var wrapIn=el('<div></div>');
+  wrapIn.appendChild(el('<label class="fld" for="code">Session code</label>'));
+  var input=el('<input type="text" id="code" autocomplete="off" placeholder="'+(isFac?"wg-oct":"code from the screen")+'" value="'+(session||lsGet("lastcode")||"")+'">');
+  wrapIn.appendChild(input);
+  box.appendChild(wrapIn);
+  var go=el('<button class="btn">'+(isFac?"Open session":"Join")+'</button>');
+  go.onclick=function(){
+    var c=(input.value||"").toLowerCase().replace(/[^a-z0-9_-]/g,"").slice(0,24);
+    if(!c){input.focus();return;}
+    session=c; lsSet("lastcode",c);
+    if(isFac){ history.replaceState(null,"",participantURL(c)); renderDash(); }
+    else { renderForm(); }
+  };
+  box.appendChild(go);
+  card.appendChild(box);
+  w.appendChild(card);
+  var back=el('<button class="toplink">&larr; Back</button>'); back.onclick=renderHome; w.appendChild(back);
+  app.appendChild(w);
+  input.focus();
+}
+
+/* ---------- FORM ---------- */
+function renderForm(){
+  view="form"; app.innerHTML="";
+  var w=el('<div class="wrap"></div>');
+  w.appendChild(el('<div class="kicker">Session '+session+'</div>'));
+  w.appendChild(el('<h1 style="font-size:28px;margin-top:6px">How we work as a group</h1>'));
+  w.appendChild(el('<p class="lede">Answer for the leadership group as a whole. Anonymous. Your area is used only to compare functions on the screen.</p>'));
+  var fnCard=el('<div class="card" style="margin-top:20px"></div>');
+  fnCard.appendChild(el('<label class="fld" for="fn">Your area</label>'));
+  var sel=el('<select id="fn"><option value="">Select your function…</option></select>');
+  FUNCTIONS.forEach(function(f){var o=el("<option></option>");o.value=f;o.textContent=f;sel.appendChild(o);});
+  sel.onchange=function(){myAnswers.fn=sel.value||null;updateSubmit();};
+  fnCard.appendChild(sel); w.appendChild(fnCard);
+
+  w.appendChild(el('<div class="section-h"><span class="n">1</span><h2>Group behaviours</h2></div>'));
+  w.appendChild(el('<p class="sdesc" style="margin:-8px 2px 6px">How often is each of these true of the group? There are fifteen, deliberately mixed.</p>'));
+  var c1=el('<div class="card"></div>');
+  LENC.forEach(function(it,i){
+    var q=el('<div class="q" id="q'+i+'"></div>');
+    q.appendChild(el('<p class="qt">'+(i+1)+". "+it[1]+"</p>"));
+    var sc=el('<div class="scale"></div>');
+    SCALE.forEach(function(s){
+      var btn=el('<button type="button" aria-pressed="false"><span class="num">'+s[0]+'</span>'+s[1]+'</button>');
+      btn.onclick=function(){
+        myAnswers.L[i]=parseInt(s[0],10);
+        Array.prototype.forEach.call(sc.children,function(x){x.setAttribute("aria-pressed","false");});
+        btn.setAttribute("aria-pressed","true"); q.classList.remove("miss"); updateSubmit();
+      };
+      sc.appendChild(btn);
+    });
+    q.appendChild(sc); c1.appendChild(q);
+  });
+  w.appendChild(c1);
+
+  w.appendChild(el('<div class="section-h"><span class="n">2</span><h2>Group strengths</h2></div>'));
+  w.appendChild(el('<p class="sdesc" style="margin:-8px 2px 6px">Rate the group from 1 (a real weakness) to 10 (a genuine strength). Slide each one.</p>'));
+  var c2=el('<div class="card"></div>');
+  STR.forEach(function(it,i){
+    var q=el('<div class="q" id="s'+i+'"></div>');
+    q.appendChild(el('<p class="qt" style="margin-bottom:2px"><b>'+it[0]+'</b></p>'));
+    q.appendChild(el('<p class="sdesc">'+it[1]+'</p>'));
+    var row=el('<div class="srow"></div>');
+    var rng=el('<input type="range" min="1" max="10" step="1" value="5" aria-label="'+it[0]+'">');
+    var val=el('<span class="sval un">&ndash;</span>');
+    rng.oninput=function(){myAnswers.S[i]=parseInt(rng.value,10);val.textContent=rng.value;val.classList.remove("un");q.classList.remove("miss");updateSubmit();};
+    row.appendChild(rng); row.appendChild(val); q.appendChild(row);
+    q.appendChild(el('<div class="bar-legend"><span>1 &middot; weakness</span><span>10 &middot; strength</span></div>'));
+    c2.appendChild(q);
+  });
+  w.appendChild(c2);
+  app.appendChild(w);
+
+  var bar=el('<div class="submitbar"><span class="msg" id="smsg"></span><button class="btn" id="submit" disabled>Submit to the room</button></div>');
+  app.appendChild(bar);
+  document.getElementById("submit").onclick=submit;
+  updateSubmit(); window.scrollTo(0,0);
+}
+function countDone(){
+  var l=myAnswers.L.filter(function(x){return x!=null;}).length;
+  var s=myAnswers.S.filter(function(x){return x!=null;}).length;
+  return {l:l,s:s,ok:(myAnswers.fn&&l===15&&s===10)};
+}
+function updateSubmit(){
+  var st=countDone(); var btn=document.getElementById("submit"); if(!btn)return;
+  btn.disabled=!st.ok; var msg=document.getElementById("smsg");
+  if(st.ok){msg.textContent="All answered. Ready to submit.";}
+  else{var need=[];if(!myAnswers.fn)need.push("area");if(st.l<15)need.push((15-st.l)+" behaviour"+((15-st.l)>1?"s":""));if(st.s<10)need.push((10-st.s)+" strength"+((10-st.s)>1?"s":""));msg.textContent="Still to do: "+need.join(", ");}
+}
+function submit(){
+  var st=countDone();
+  if(!st.ok){
+    myAnswers.L.forEach(function(x,i){if(x==null){var q=document.getElementById("q"+i);if(q)q.classList.add("miss");}});
+    myAnswers.S.forEach(function(x,i){if(x==null){var q=document.getElementById("s"+i);if(q)q.classList.add("miss");}});
+    var f=document.querySelector(".q.miss"); if(f)f.scrollIntoView({behavior:"smooth",block:"center"}); return;
+  }
+  mySub={fn:myAnswers.fn,health:computeHealth(myAnswers.L),str:myAnswers.S.slice(),ts:Date.now()};
+  var btn=document.getElementById("submit"); if(btn){btn.disabled=true;btn.textContent="Sending…";}
+  if(DEMO){ seedDemo(); demoSubs.push(mySub); renderDone(true); return; }
+  if(db){
+    db.ref("sessions/"+session+"/responses").push(mySub)
+      .then(function(){renderDone(true);})
+      .catch(function(){renderDone(false);});
+  } else { renderDone(false); }
+}
+
+/* ---------- DONE ---------- */
+function renderDone(sent){
+  view="done"; app.innerHTML="";
+  var w=el('<div class="wrap stack"></div>');
+  w.appendChild(el('<div><span class="tag">'+(sent?"Your response is in":"Saved on this device")+'</span>'+
+   '<h1 style="font-size:30px;margin-top:12px">Thank you</h1>'+
+   '<p class="lede">'+(sent?"Your answers have joined session "+session+". Here is your own reading, for reflection. The screen at the front shows the group picture.":"Your answers could not reach the shared session, but your own reading is below.")+'</p></div>'));
+  var res=el('<div class="card result"></div>');
+  res.appendChild(el('<h3 style="font-size:16px">Group behaviours, as you see them</h3>'));
+  res.appendChild(el('<p class="sdesc">Average frequency per area, 1 to 5. Higher means the healthier pattern shows up more often.</p>'));
+  var big=el('<div class="big"></div>');
+  DYS.forEach(function(d){var v=mySub.health[d];big.appendChild(el('<div class="chip"><div class="lab">'+d+'</div><div class="v">'+(v!=null?v.toFixed(1):"&ndash;")+'</div></div>'));});
+  res.appendChild(big); w.appendChild(res);
+  if(!sent){w.appendChild(el('<div class="hint">If this keeps happening, the database rules may not allow writing, or the connection dropped. The facilitator can check the setup steps.</div>'));}
+  var again=el('<button class="btn ghost">Change my answers</button>');
+  again.onclick=function(){myAnswers={fn:myAnswers.fn,L:new Array(15).fill(null),S:new Array(10).fill(null)};renderForm();};
+  w.appendChild(again);
+  app.appendChild(w); window.scrollTo(0,0);
+}
+
+/* ---------- DASHBOARD ---------- */
+var dashSubs=[];
+function stat(vals){if(!vals.length)return null;var s=0,mn=Infinity,mx=-Infinity;vals.forEach(function(v){s+=v;if(v<mn)mn=v;if(v>mx)mx=v;});return {avg:s/vals.length,min:mn,max:mx,n:vals.length};}
+function bar(name,sub,stt,max){
+  var pct=function(v){return v/max*100;};
+  var m=el('<div class="metric"></div>');
+  var top=el('<div class="top"></div>');
+  top.appendChild(el('<div class="name">'+name+(sub?'<small>'+sub+'</small>':'')+'</div>'));
+  if(stt){top.appendChild(el('<div class="avg">'+stt.avg.toFixed(1)+'<span class="rng">range '+stt.min.toFixed(1)+'&ndash;'+stt.max.toFixed(1)+'</span></div>'));}
+  else{top.appendChild(el('<div class="avg" style="color:var(--faint);font-size:15px">&ndash;</div>'));}
+  m.appendChild(top);
+  var track=el('<div class="track"></div>');
+  if(stt){
+    var r=el('<div class="range"></div>');r.style.left=pct(stt.min)+"%";r.style.width=Math.max(0.6,pct(stt.max-stt.min))+"%";
+    var f=el('<div class="fill"></div>');f.style.width=pct(stt.avg)+"%";
+    var mean=el('<div class="mean"></div>');mean.style.left="calc("+pct(stt.avg)+"% - 1.5px)";
+    track.appendChild(r);track.appendChild(f);track.appendChild(mean);
+  }
+  m.appendChild(track); return m;
+}
+function startDashListen(){
+  var ref=db.ref("sessions/"+session+"/responses");
+  var cb=ref.on("value",function(snap){
+    dashReadErr=null;
+    var val=snap.val()||{}; dashSubs=Object.keys(val).map(function(k){return val[k];});
+    paintDash();
+  },function(err){ dashReadErr=err&&err.code?err.code:"read denied"; dashSubs=[]; paintDash(); });
+  unsub=function(){ref.off("value",cb);};
+}
+function renderDash(){
+  view="dash"; if(unsub){unsub();unsub=null;} dashReadErr=null;
+  if(DEMO){ seedDemo(); dashSubs=demoSubs.slice(); paintDash(); return; }
+  if(db){
+    // The projector screen signs in anonymously so it can READ the pooled
+    // results. Participants never do this, so they can submit but not read.
+    if(auth && !auth.currentUser){
+      auth.signInAnonymously().then(startDashListen).catch(function(e){ authErr=e; startDashListen(); });
+    } else { startDashListen(); }
+  }
+  paintDash();
+}
+function paintConn(){var e=document.getElementById("connstate"); if(e){e.innerHTML=(DEMO?"preview, not saved":(db?('<span class="pulse"></span>'+(connected?"live":"connecting…")):"database not configured"));}}
+function paintDash(){
+  app.innerHTML="";
+  var w=el('<div class="wrap dash"></div>');
+  var subs=dashSubs;
+  var head=el('<div class="dhead"></div>');
+  head.appendChild(el('<div><div class="kicker">Wargaming &middot; Leader of Leaders &middot; session '+session+'</div>'+
+   '<h1 style="font-size:30px;margin-top:6px">How this group sees itself</h1></div>'));
+  head.appendChild(el('<div style="text-align:right"><div class="count"><b>'+subs.length+'</b> response'+(subs.length===1?"":"s")+'</div>'+
+   '<div class="sdesc" style="margin:0" id="connstate"></div></div>'));
+  w.appendChild(head);
+
+  // share panel
+  var sp=el('<div class="card" style="margin-top:18px"></div>');
+  var share=el('<div class="share"></div>');
+  var qr=el('<div class="qr" id="qr"></div>');
+  share.appendChild(qr);
+  var info=el('<div style="flex:1 1 240px"></div>');
+  info.appendChild(el('<div class="sdesc" style="margin:0 0 4px">Ask the room to scan this, or go to the link and enter the code</div>'));
+  info.appendChild(el('<div class="codepill">'+session+'</div>'));
+  info.appendChild(el('<div class="link" style="margin-top:6px">'+participantURL(session)+'</div>'));
+  var acts=el('<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"></div>');
+  var copyL=el('<button class="btn ghost sm">Copy link</button>'); copyL.onclick=function(){copyText(participantURL(session),"Link copied");};
+  var reset=el('<button class="btn ghost sm">Reset session</button>'); reset.onclick=function(){confirmReset(reset);};
+  acts.appendChild(copyL); acts.appendChild(reset);
+  info.appendChild(acts);
+  share.appendChild(info);
+  sp.appendChild(share); w.appendChild(sp);
+
+  if(dashReadErr){
+    w.appendChild(el('<div class="card" style="margin-top:18px;border-color:var(--red)"><h3 style="font-size:16px;color:var(--red)">This screen cannot read the results</h3>'+
+     '<p class="sdesc" style="margin-top:6px">Responses are being written, but the projector cannot read them back. This is the write-only setup working. To let this screen read, enable <b>Anonymous</b> sign-in in Firebase (Authentication, Sign-in method), and make sure the database rules allow read when <code class="k">auth != null</code>. The setup message with this file has the exact rules.</p></div>'));
+  }
+
+  if(subs.length===0){
+    w.appendChild(el('<div class="card" style="margin-top:22px"><div class="waiting"><p style="font-family:var(--disp);font-size:20px;margin:0 0 8px">Waiting for the room</p>'+
+     '<p class="sdesc" style="margin:0 auto;max-width:440px">As people submit on their devices, the five group-behaviour readings and the ten strengths will fill in here, each with the group average and the spread of opinion.</p></div></div>'));
+    app.appendChild(w); drawQR(); paintConn(); return;
+  }
+
+  var grid=el('<div class="grid2" style="margin-top:22px"></div>');
+  var left=el('<div class="card"></div>');
+  left.appendChild(el('<h2 style="font-size:19px">Group behaviours <small style="font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted);display:block;margin-top:3px">Average frequency, 1&ndash;5. The red line is the mean; the pale band is the range.</small></h2>'));
+  DYS.forEach(function(d){var vals=subs.map(function(s){return s.health?s.health[d]:null;}).filter(function(v){return v!=null;});left.appendChild(bar(d,DYS_SUB[d],stat(vals),5));});
+  grid.appendChild(left);
+  var right=el('<div class="card"></div>');
+  right.appendChild(el('<h2 style="font-size:19px">Group strengths <small style="font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted);display:block;margin-top:3px">Average rating, 1&ndash;10, with the range across the room.</small></h2>'));
+  STR.forEach(function(it,i){var vals=subs.map(function(s){return s.str?s.str[i]:null;}).filter(function(v){return v!=null;});right.appendChild(bar(it[0],null,stat(vals),10));});
+  grid.appendChild(right); w.appendChild(grid);
+
+  var byfn={}; subs.forEach(function(s){var k=s.fn||"Unstated";if(!byfn[k])byfn[k]=[];byfn[k].push(s);});
+  var fnCard=el('<div class="card" style="margin-top:26px"></div>');
+  fnCard.appendChild(el('<h2 style="font-size:19px">By function <small style="font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted);display:block;margin-top:3px">Where the areas diverge is usually the conversation worth having.</small></h2>'));
+  var rows=Object.keys(byfn).sort().map(function(k){
+    var arr=byfn[k];var hv=[];arr.forEach(function(s){if(s.health)DYS.forEach(function(d){if(s.health[d]!=null)hv.push(s.health[d]);});});
+    var sv=[];arr.forEach(function(s){if(s.str)s.str.forEach(function(v){if(v!=null)sv.push(v);});});
+    var hs=stat(hv),ss=stat(sv);
+    return '<tr><td>'+k+'</td><td class="num">'+arr.length+'</td><td class="num">'+(hs?hs.avg.toFixed(1):"&ndash;")+'</td><td class="num">'+(ss?ss.avg.toFixed(1):"&ndash;")+'</td></tr>';
+  }).join("");
+  fnCard.appendChild(el('<table class="ftable"><thead><tr><th>Function</th><th class="num">n</th><th class="num">Behaviours /5</th><th class="num">Strengths /10</th></tr></thead><tbody>'+rows+'</tbody></table>'));
+  w.appendChild(fnCard);
+
+  var act=el('<div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>');
+  var copy=el('<button class="btn ghost">Copy summary</button>'); copy.onclick=function(){copySummary(subs);};
+  act.appendChild(copy);
+  var back=el('<button class="toplink">&larr; Back to start</button>'); back.onclick=function(){if(unsub){unsub();unsub=null;}history.replaceState(null,"",location.pathname);renderHome();};
+  act.appendChild(back);
+  w.appendChild(act);
+  app.appendChild(w);
+  drawQR(); paintConn();
+}
+function drawQR(){
+  var box=document.getElementById("qr"); if(!box||typeof QRCode==="undefined")return;
+  box.innerHTML="";
+  try{ new QRCode(box,{text:participantURL(session),width:132,height:132,colorDark:"#232021",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M}); }catch(e){}
+}
+var resetArmed=false;
+function confirmReset(btn){
+  if(!resetArmed){resetArmed=true;btn.textContent="Tap again to clear";btn.classList.add("red");setTimeout(function(){resetArmed=false;btn.textContent="Reset session";btn.classList.remove("red");},4000);return;}
+  if(db){db.ref("sessions/"+session+"/responses").remove();}
+  resetArmed=false;btn.textContent="Reset session";btn.classList.remove("red");
+}
+function copyText(text,msg){
+  try{navigator.clipboard.writeText(text).then(function(){flash(msg);},function(){fallbackCopy(text,msg);});}catch(e){fallbackCopy(text,msg);}
+}
+function fallbackCopy(text,msg){var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");flash(msg);}catch(e){flash("Copy not available");}document.body.removeChild(ta);}
+function copySummary(subs){
+  var lines=["Wargaming group diagnostic, session "+session+" — "+subs.length+" responses",""];
+  lines.push("Group behaviours (avg /5, range):");
+  DYS.forEach(function(d){var vals=subs.map(function(s){return s.health?s.health[d]:null;}).filter(function(v){return v!=null;});var st=stat(vals);if(st)lines.push("  "+d+": "+st.avg.toFixed(1)+" ("+st.min.toFixed(1)+"-"+st.max.toFixed(1)+")");});
+  lines.push(""); lines.push("Group strengths (avg /10, range):");
+  STR.forEach(function(it,i){var vals=subs.map(function(s){return s.str?s.str[i]:null;}).filter(function(v){return v!=null;});var st=stat(vals);if(st)lines.push("  "+it[0]+": "+st.avg.toFixed(1)+" ("+st.min.toFixed(1)+"-"+st.max.toFixed(1)+")");});
+  copyText(lines.join("\n"),"Summary copied");
+}
+function flash(msg){var f=el('<div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:20px;font-size:14px;z-index:50">'+msg+'</div>');document.body.appendChild(f);setTimeout(function(){f.remove();},1600);}
+
+/* ---------- boot ---------- */
+if(!CONFIGURED){ renderSetup(); }
+else if(session && getParam("s")){ renderHome(); }
+else { renderHome(); }
+</script>
+</body>
+</html>
