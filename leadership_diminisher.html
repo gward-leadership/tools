@@ -193,12 +193,21 @@ function renderResults(){
   ordered.forEach(it=>{ html += `<div class="fullrow"><span>${it.name}</span><span class="v">${state.scores[it.id]}</span></div>`; });
   html += `<div class="commit"><strong>Your one commitment.</strong> Name the single tendency that most costs your people, and the one Multiplier move you will practise before the next session. Write it where you will see it.</div>
     <div class="attrib">Remember that a high score is not a character verdict. These are habits, and habits can be changed one deliberate behaviour at a time.<br><br>Adapted from the work of Liz Wiseman on Multipliers and accidental diminishers (Multipliers, 2010 and 2017; Wiseman and McKeown, Bringing Out the Best in Your People, Harvard Business Review, 2010). Behavioural statements are our own.</div>
+    <button class="save-btn" id="emailBtn" style="background:#1C1C1C;">&#9993;&nbsp;&nbsp;Email this to myself</button>
     <button class="save-btn" id="saveBtn">Save my results</button>
     <div class="save-instructions" id="saveInstructions"></div>
     <button class="restart-btn begin-again-btn" id="restartBtn2">Begin again</button>
   </div>`;
   app.innerHTML = html;
   document.getElementById('restartBtn2').addEventListener('click',()=>{ reset(); render(); });
+  document.getElementById('emailBtn').onclick=function(){
+    var L=['My Diminisher Self-Check','','Score: '+total+' / 60  ('+band.name+')',band.desc,'','Signature moves, and what to try:'];
+    top.forEach(function(it){ L.push('- '+it.name+' ('+state.scores[it.id]+'/5): '+it.move); });
+    L.push('','All twelve, highest first:');
+    ordered.forEach(function(it){ L.push('- '+it.name+': '+state.scores[it.id]); });
+    L.push('','My one commitment: name the single tendency that most costs my people, and the one Multiplier move I will practise before the next session.');
+    window.location.href='mailto:?subject='+encodeURIComponent('My Diminisher Self-Check')+'&body='+encodeURIComponent(L.join(String.fromCharCode(10)));
+  };
   const saveBtn=document.getElementById('saveBtn'), saveInstructions=document.getElementById('saveInstructions');
   var isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent), isAnd=/Android/i.test(navigator.userAgent);
   var title, steps;
