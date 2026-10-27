@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance Culture: The Room</title>
+<style>
+  :root {
+    --ink: #1C1C1C;
+    --paper: #F7F5F0;
+    --card: #FFFFFF;
+    --line: #E0DCF0;
+    --purple: #7B6FA0;
+    --muted: #666666;
+    --low: #B5532F;
+    --mid: #C9C4B8;
+    --high: #2F7F86;
+    --zone-contested: #F6EAD0;
+    --zone-weak: #F2DDD3;
+    --zone-lukewarm: #ECE9E2;
+    --zone-strong: #D9ECEC;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: var(--paper); color: var(--ink); min-height: 100vh; font-size: 18px; }
+  .sans { font-family: 'Helvetica Neue', Arial, sans-serif; }
+
+  .header {
+    background: var(--ink); color: var(--paper); border-bottom: 4px solid var(--purple);
+    padding: 18px clamp(16px, 4vw, 40px); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .header h1 { font-size: 1.35rem; font-weight: normal; letter-spacing: 0.06em; text-transform: uppercase; }
+  .header p { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; color: #A8A8A8; margin-top: 4px; letter-spacing: 0.03em; }
+  .live { display: flex; align-items: center; gap: 12px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.9rem; color: #D6D6D6; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #5BBF7A; }
+  .dot.paused { background: #C9C4B8; }
+  .dot.wait { background: #D9A441; }
+  .btn {
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+    background: transparent; color: #D6D6D6; border: 1px solid #6a6a6a; border-radius: 2px; padding: 7px 12px; cursor: pointer;
+  }
+  .btn:hover { border-color: #fff; color: #fff; }
+  .btn:focus-visible, .tab:focus-visible { outline: 3px solid var(--purple); outline-offset: 2px; }
+
+  .banner {
+    background: #EDE8F5; border-left: 4px solid var(--purple); padding: 10px clamp(16px, 4vw, 40px);
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.82rem; color: #3C3C3C; display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .banner button { font-family: inherit; font-size: 0.78rem; background: none; border: 1px solid var(--purple); color: var(--purple); padding: 5px 10px; border-radius: 2px; cursor: pointer; }
+
+  .tabs { display: flex; gap: 6px; padding: 18px clamp(16px, 4vw, 40px) 0; flex-wrap: wrap; }
+  .tab {
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+    background: transparent; border: 2px solid var(--ink); color: var(--ink); padding: 10px 18px; border-radius: 2px; cursor: pointer;
+  }
+  .tab[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+
+  main { padding: 22px clamp(16px, 4vw, 40px) 60px; max-width: 1400px; margin: 0 auto; }
+  .lead { font-size: 1.15rem; line-height: 1.6; margin-bottom: 18px; max-width: 900px; }
+  .waiting { text-align: center; padding: 90px 16px; font-size: 1.3rem; line-height: 1.7; color: #444; }
+  .waiting small { display: block; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
+
+  /* Map */
+  .map-wrap { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 980px) { .map-wrap { grid-template-columns: minmax(0, 1fr); } }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 2px; padding: 16px 18px; min-width: 0; }
+  .panel svg { width: 100%; height: auto; display: block; }
+  .panel h2 { font-size: 1.05rem; font-weight: normal; margin-bottom: 12px; }
+  .side-item { padding: 12px 0; border-top: 1px solid var(--line); font-size: 0.98rem; line-height: 1.5; }
+  .side-item:first-of-type { border-top: none; }
+  .side-item .no { font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: bold; color: var(--purple); margin-right: 6px; }
+  .splitline { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.82rem; margin-top: 4px; display: flex; gap: 14px; }
+  .lo { color: var(--low); font-weight: bold; }
+  .hi { color: var(--high); font-weight: bold; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; color: #444; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .legend i.sq { border-radius: 2px; }
+
+  /* Divided cards */
+  .cards { display: grid; gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 2px; padding: 16px 20px; display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(280px, 380px); gap: 16px; align-items: center; }
+  @media (max-width: 900px) { .card { grid-template-columns: 36px minmax(0, 1fr); } .card svg { grid-column: 1 / -1; } }
+  .rank { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.5rem; color: var(--purple); text-align: center; }
+  .meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+  .tag { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: bold; }
+  .chip { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
+  .chip.divided { background: var(--zone-contested); color: #7A5A12; }
+  .chip.mixed { background: var(--zone-lukewarm); color: #555; }
+  .chip.shared { background: #E7EEEE; color: #35666a; }
+  .stmt { font-size: 1.1rem; line-height: 1.55; }
+  .card svg { width: 100%; height: auto; display: block; }
+  .more { margin-top: 16px; text-align: center; }
+  .more .btn { color: var(--ink); border-color: var(--ink); }
+  .more .btn:hover { background: var(--ink); color: var(--paper); }
+
+  /* Pyramid */
+  .pyr { display: grid; gap: 8px; }
+  .tier { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 14px; align-items: center; }
+  @media (max-width: 700px) { .tier { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+  .tier-name { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .tier-name small { display: block; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 0.74rem; margin-top: 2px; }
+  .bar-area { display: flex; justify-content: center; min-width: 0; }
+  .bar { display: flex; height: 62px; border-radius: 2px; overflow: hidden; min-width: 0; }
+  .seg { display: flex; align-items: center; justify-content: center; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.95rem; font-weight: bold; color: #fff; min-width: 0; transition: flex-basis 0.4s; }
+  .bar.wide { position: relative; width: 100%; background: #EFEDE7; overflow: hidden; }
+  .seg.abs { position: absolute; top: 0; bottom: 0; }
+  .centre { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: rgba(28,28,28,0.55); }
+  .seg.low { background: var(--low); }
+  .seg.mid { background: var(--mid); color: #333; }
+  .seg.high { background: var(--high); }
+  .foundation { margin-top: 10px; padding-top: 14px; border-top: 2px solid var(--ink); }
+  .callouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 22px; }
+  .callout { background: var(--card); border: 1px solid var(--line); border-radius: 2px; padding: 14px 18px; font-size: 1rem; line-height: 1.55; }
+  .callout b { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--purple); display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Performance Culture</h1>
+    <p>How the room sees it. Combined and anonymous.</p>
+  </div>
+  <div class="live">
+    <span class="dot wait" id="dot"></span><span id="liveText">Connecting</span>
+    <button class="btn" id="pauseBtn" type="button">Pause</button>
+  </div>
+</div>
+
+<div class="banner" id="demoBanner">
+  <span><strong>Simulated room.</strong> These are made-up answers from 45 people so you can see how the page reads. It switches to live data once the web app address is added.</span>
+  <button type="button" id="reshuffle">New simulated room</button>
+</div>
+
+<div class="tabs" role="tablist" aria-label="Views">
+  <button class="tab" role="tab" data-view="map" aria-selected="true">The map</button>
+  <button class="tab" role="tab" data-view="divided" aria-selected="false">Most divided</button>
+  <button class="tab" role="tab" data-view="pyramid" aria-selected="false">The pyramid</button>
+</div>
+
+<main id="stage"></main>
+
+<script>
+/* Paste the same web app URL used by the survey page between the quotation marks. */
+const ENDPOINT = "PASTE_WEB_APP_URL_HERE";
+const POLL_MS = 5000;
+
+const THEMES = ["Clarity", "Trust", "Conflict", "Commitment", "Accountability", "Collective results"];
+const THEME_COLORS = {
+  "Clarity": "#7B6FA0", "Trust": "#2F7F86", "Conflict": "#B5532F",
+  "Commitment": "#B8861F", "Accountability": "#3E5C8A", "Collective results": "#5E7F3A"
+};
+/* Same order as the survey page and the script. */
+const STATEMENTS = [
+  ["Clarity", "I can say in one sentence what excellent performance looks like in my own role."],
+  ["Clarity", "The leadership group shares one definition of good performance, and not several."],
+  ["Clarity", "Our priorities are clear enough that my team knows what to stop doing as well as what to start."],
+  ["Clarity", "The targets I am held to connect directly to the work my people do each day."],
+  ["Trust", "In this group, people admit mistakes without fear of how it will be used against them."],
+  ["Trust", "I can say \"I don't know\" or \"I need help\" to my peers and be met with support."],
+  ["Trust", "My peers act in the interest of the whole organisation, and not only of their own area."],
+  ["Trust", "Information is shared across functions early, and not once it has become a problem."],
+  ["Conflict", "When leaders disagree, it is said in the room and not afterwards in the corridor."],
+  ["Conflict", "We challenge each other's ideas robustly without it becoming personal."],
+  ["Conflict", "Difficult topics are raised before they turn into crises."],
+  ["Conflict", "I give my peers honest feedback on their performance, even when it is uncomfortable."],
+  ["Commitment", "Once a decision is made, everyone acts on it as though it were their own."],
+  ["Commitment", "Important decisions are made at the speed the business needs."],
+  ["Commitment", "People can disagree with a decision and still commit to it fully."],
+  ["Commitment", "Decisions taken by the leadership group are carried through consistently across the organisation."],
+  ["Accountability", "Leaders hold their peers to account for commitments, and not only their own direct reports."],
+  ["Accountability", "Underperformance is addressed promptly, whoever is responsible."],
+  ["Accountability", "When results fall short, the content we report internally reflects that."],
+  ["Accountability", "The same standards apply at every level, including the top."],
+  ["Collective results", "The results of the whole organisation take precedence over the results of my own area."],
+  ["Collective results", "The values we state describe how we actually work, and not only how we speak about our work."],
+  ["Collective results", "I act on what is not working, without waiting for others to move first."],
+  ["Collective results", "We learn as much from what goes well as from what goes wrong."]
+];
+/* Pyramid order, top to bottom. Clarity is drawn as the ground beneath it. */
+const TIERS = [
+  ["Collective results", "Results"],
+  ["Accountability", "Accountability"],
+  ["Commitment", "Commitment"],
+  ["Conflict", "Healthy conflict"],
+  ["Trust", "Trust"]
+];
+
+const DIVIDED_AT = 1.15;   /* standard deviation at or above this counts as divided */
+const MIXED_AT = 0.9;
+
+const COLORS = { low: "#B5532F", mid: "#C9C4B8", high: "#2F7F86" };
+
+/* ---------- state ---------- */
+const params = new URLSearchParams(location.search);
+const DEMO = ENDPOINT.indexOf("PASTE_") === 0 || params.has("demo");
+let view = "map";
+let showAll = false;
+let paused = false;
+let data = null;       /* {n, hidden, counts} */
+let lastJSON = "";
+let demoSeed = 7;
+
+/* ---------- helpers ---------- */
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+function pct(x) { return Math.round(x * 100); }
+
+function stats(counts) {
+  return counts.map(function (c, i) {
+    const n = c.reduce(function (a, b) { return a + b; }, 0);
+    let sum = 0;
+    for (let k = 0; k < 5; k++) sum += c[k] * (k + 1);
+    const mean = n ? sum / n : 0;
+    let v = 0;
+    for (let k = 0; k < 5; k++) v += c[k] * Math.pow(k + 1 - mean, 2);
+    const sd = n ? Math.sqrt(v / n) : 0;
+    return {
+      i: i, no: i + 1, theme: STATEMENTS[i][0], text: STATEMENTS[i][1], c: c, n: n,
+      mean: mean, sd: sd,
+      low: n ? (c[0] + c[1]) / n : 0, neu: n ? c[2] / n : 0, high: n ? (c[3] + c[4]) / n : 0
+    };
+  });
+}
+
+function label(sd) {
+  if (sd >= DIVIDED_AT) return ["Divided", "divided"];
+  if (sd >= MIXED_AT) return ["Mixed", "mixed"];
+  return ["Shared view", "shared"];
+}
+
+/* ---------- simulated room ---------- */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function demoCounts(seed) {
+  const rnd = mulberry32(seed);
+  function gauss() { return Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd()); }
+  function draw(m, s) { return Math.min(5, Math.max(1, Math.round(m + s * gauss()))); }
+  /* a = broad agreement, d = broad disagreement, m = lukewarm, s = split (share who sit low) */
+  const profile = ["a","s.45","m","a","s.5","s.4","m","d","d","m","s.5","d","a","d","m","d","d","d","s.45","s.55","a","s.5","a","m"];
+  const N = 45;
+  const counts = [];
+  for (let i = 0; i < 24; i++) {
+    const c = [0, 0, 0, 0, 0];
+    const p = profile[i];
+    for (let r = 0; r < N; r++) {
+      let v;
+      if (p === "a") v = draw(4.1, 0.8);
+      else if (p === "d") v = draw(2.2, 0.8);
+      else if (p === "m") v = draw(3.1, 0.85);
+      else v = rnd() < parseFloat(p.slice(1)) ? draw(1.8, 0.6) : draw(4.4, 0.6);
+      c[v - 1]++;
+    }
+    counts.push(c);
+  }
+  return { ok: true, n: N, hidden: false, counts: counts };
+}
+
+/* ---------- dot strip (one dot per person) ---------- */
+function dotStrip(c, globalMax) {
+  const rowsMax = Math.max(7, Math.ceil(globalMax / 7));
+  const d = 11, pitch = 13, colW = 100;
+  const H = rowsMax * pitch + 38, W = 500;
+  const base = H - 24;
+  let out = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Distribution of ratings">';
+  out += '<line x1="6" y1="' + (base + 2) + '" x2="' + (W - 6) + '" y2="' + (base + 2) + '" stroke="#CCCAE0"/>';
+  for (let k = 0; k < 5; k++) {
+    const cx = colW * k + colW / 2;
+    const color = k < 2 ? COLORS.low : (k === 2 ? COLORS.mid : COLORS.high);
+    const ncols = Math.max(1, Math.ceil(c[k] / rowsMax));
+    for (let j = 0; j < c[k]; j++) {
+      const sub = Math.floor(j / rowsMax), row = j % rowsMax;
+      const x = cx + (sub - (ncols - 1) / 2) * pitch;
+      const y = base - row * pitch - d / 2 - 1;
+      out += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (d / 2) + '" fill="' + color + '"/>';
+    }
+    out += '<text x="' + cx + '" y="' + (H - 6) + '" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="13" fill="#555">' + (k + 1) + '</text>';
+  }
+  out += '<text x="6" y="' + (H - 6) + '" font-family="Helvetica Neue, Arial, sans-serif" font-size="11" fill="#888"></text>';
+  out += '</svg>';
+  return out;
+}
+
+/* ---------- views ---------- */
+function viewMap(S) {
+  const W = 860, H = 520, L = 64, R = 16, T = 16, B = 62;
+  const y0 = 0.3, y1 = 1.9;
+  const px = function (x) { return L + (x - 1) / 4 * (W - L - R); };
+  const py = function (y) { return T + (y1 - y) / (y1 - y0) * (H - T - B); };
+  const yDiv = py(DIVIDED_AT), yBot = H - B;
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Map of statements by average rating and how divided the room is">';
+  s += '<rect x="' + L + '" y="' + T + '" width="' + (W - L - R) + '" height="' + (yDiv - T) + '" fill="var(--zone-contested)"/>';
+  s += '<rect x="' + L + '" y="' + yDiv + '" width="' + (px(2.5) - L) + '" height="' + (yBot - yDiv) + '" fill="var(--zone-weak)"/>';
+  s += '<rect x="' + px(2.5) + '" y="' + yDiv + '" width="' + (px(3.5) - px(2.5)) + '" height="' + (yBot - yDiv) + '" fill="var(--zone-lukewarm)"/>';
+  s += '<rect x="' + px(3.5) + '" y="' + yDiv + '" width="' + (W - R - px(3.5)) + '" height="' + (yBot - yDiv) + '" fill="var(--zone-strong)"/>';
+  const zl = 'font-family="Helvetica Neue, Arial, sans-serif" font-size="13" letter-spacing="1.2" font-weight="bold"';
+  s += '<text x="' + (L + 12) + '" y="' + (T + 22) + '" ' + zl + ' fill="#7A5A12">CONTESTED</text>';
+  s += '<text x="' + (L + 12) + '" y="' + (yBot - 12) + '" ' + zl + ' fill="#8A3F20">SHARED WEAKNESS</text>';
+  s += '<text x="' + ((px(2.5) + px(3.5)) / 2) + '" y="' + (yBot - 12) + '" text-anchor="middle" ' + zl + ' fill="#666">LUKEWARM</text>';
+  s += '<text x="' + (W - R - 12) + '" y="' + (yBot - 12) + '" text-anchor="end" ' + zl + ' fill="#276468">SHARED STRENGTH</text>';
+  for (let x = 1; x <= 5; x++) {
+    s += '<line x1="' + px(x) + '" y1="' + T + '" x2="' + px(x) + '" y2="' + yBot + '" stroke="#fff" stroke-opacity="0.7"/>';
+    s += '<text x="' + px(x) + '" y="' + (yBot + 22) + '" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="14" fill="#444">' + x + '</text>';
+  }
+  s += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="13" fill="#444">Average rating, from 1 (strongly disagree) to 5 (strongly agree)</text>';
+  s += '<text x="' + (L - 12) + '" y="' + (T + 14) + '" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="12" fill="#444">Divided</text>';
+  s += '<text x="' + (L - 12) + '" y="' + (yBot - 2) + '" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="12" fill="#444">United</text>';
+  s += '<text transform="translate(16,' + ((T + yBot) / 2) + ') rotate(-90)" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="13" fill="#444">How divided the room is</text>';
+
+  /* positions, nudged apart so numbered dots stay readable */
+  const pts = S.map(function (t) {
+    return { t: t, x: px(Math.min(5, Math.max(1, t.mean))), y: py(Math.min(y1, Math.max(y0, t.sd))) };
+  });
+  for (let it = 0; it < 40; it++) {
+    for (let a = 0; a < pts.length; a++) {
+      for (let b = a + 1; b < pts.length; b++) {
+        let dx = pts[b].x - pts[a].x, dy = pts[b].y - pts[a].y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 30) {
+          if (dist < 0.01) { dx = 1; dy = 0.5; dist = 1.12; }
+          const push = (30 - dist) / 2, ux = dx / dist, uy = dy / dist;
+          pts[a].x -= ux * push; pts[a].y -= uy * push;
+          pts[b].x += ux * push; pts[b].y += uy * push;
+        }
+      }
+    }
+  }
+  pts.forEach(function (p) {
+    p.x = Math.min(W - R - 15, Math.max(L + 15, p.x));
+    p.y = Math.min(yBot - 16, Math.max(T + 15, p.y));
+    const col = THEME_COLORS[p.t.theme];
+    s += '<g><title>' + p.t.no + '. ' + esc(p.t.text) + '</title>';
+    s += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="14" fill="' + col + '" stroke="#fff" stroke-width="2"/>';
+    s += '<text x="' + p.x.toFixed(1) + '" y="' + (p.y + 4.5).toFixed(1) + '" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="12" font-weight="bold" fill="#fff">' + p.t.no + '</text></g>';
+  });
+  s += '</svg>';
+
+  let legend = '<div class="legend">';
+  THEMES.forEach(function (t) { legend += '<span><i style="background:' + THEME_COLORS[t] + '"></i>' + esc(t) + '</span>'; });
+  legend += '</div>';
+
+  const top = S.slice().sort(function (a, b) { return b.sd - a.sd || a.i - b.i; }).slice(0, 3);
+  let side = '<div class="panel"><h2>Where the room is most divided</h2>';
+  top.forEach(function (t) {
+    side += '<div class="side-item"><span class="no">' + t.no + '</span>' + esc(t.text) +
+      '<div class="splitline"><span class="lo">' + pct(t.low) + '% disagree</span><span class="hi">' + pct(t.high) + '% agree</span></div></div>';
+  });
+  side += '</div>';
+
+  const nContested = S.filter(function (t) { return t.sd >= DIVIDED_AT; }).length;
+  const lead = nContested === 0
+    ? 'No statement splits the room sharply. Look at the shared strengths and weaknesses.'
+    : nContested + ' of the 24 statements split the room. The average hides it. Each number below is one statement, placed by what people said on average and by how far apart they are.';
+  return '<p class="lead">' + lead + '</p><div class="map-wrap"><div class="panel">' + s + legend + '</div>' + side + '</div>';
+}
+
+function viewDivided(S) {
+  const sorted = S.slice().sort(function (a, b) { return b.sd - a.sd || a.i - b.i; });
+  const globalMax = Math.max.apply(null, S.map(function (t) { return Math.max.apply(null, t.c); }));
+  const list = showAll ? sorted : sorted.slice(0, 6);
+  let h = '<p class="lead">Every dot is one person. Where the dots sit in two groups with a gap between them, the room holds two different views of the same reality.</p><div class="cards">';
+  list.forEach(function (t, idx) {
+    const lab = label(t.sd);
+    h += '<article class="card"><div class="rank">' + (idx + 1) + '</div><div>' +
+      '<div class="meta"><span class="tag" style="color:' + THEME_COLORS[t.theme] + '">' + esc(t.theme) + ' · statement ' + t.no + '</span><span class="chip ' + lab[1] + '">' + lab[0] + '</span></div>' +
+      '<p class="stmt">' + esc(t.text) + '</p>' +
+      '<div class="splitline"><span class="lo">' + pct(t.low) + '% disagree</span><span style="color:#777">' + pct(t.neu) + '% neutral</span><span class="hi">' + pct(t.high) + '% agree</span></div>' +
+      '</div>' + dotStrip(t.c, globalMax) + '</article>';
+  });
+  h += '</div><div class="more"><button class="btn" id="moreBtn" type="button">' + (showAll ? 'Show the six most divided' : 'Show all 24 statements') + '</button></div>';
+  return h;
+}
+
+function viewPyramid(S) {
+  function tierStats(theme) {
+    const items = S.filter(function (t) { return t.theme === theme; });
+    let low = 0, neu = 0, high = 0, n = 0;
+    items.forEach(function (t) { low += t.c[0] + t.c[1]; neu += t.c[2]; high += t.c[3] + t.c[4]; n += t.n; });
+    return { low: n ? low / n : 0, neu: n ? neu / n : 0, high: n ? high / n : 0 };
+  }
+  /* Bars are centred on the neutral ratings: disagreement runs left, agreement runs right. */
+  const SPAN = 0.75;
+  function at(v) { return Math.max(0, Math.min(100, 50 + v * (50 / SPAN))); }
+  function bar(ts) {
+    const a = -ts.neu / 2 - ts.low, b = -ts.neu / 2, c = ts.neu / 2, d = ts.neu / 2 + ts.high;
+    function seg(cls, from, to, v) {
+      const l = at(from), r = at(to);
+      return '<div class="seg abs ' + cls + '" style="left:' + l.toFixed(2) + '%;width:' + (r - l).toFixed(2) + '%">' + (v >= 0.07 ? pct(v) + '%' : '') + '</div>';
+    }
+    return '<div class="bar-area"><div class="bar wide"><div class="centre"></div>' + seg('low', a, b, ts.low) + seg('mid', b, c, ts.neu) + seg('high', c, d, ts.high) + '</div></div>';
+  }
+  let h = '<p class="lead">Each tier shows the share of ratings that disagree, are neutral, or agree. Bars are centred on the neutral ratings, so a lean to the left means more disagreement and a lean to the right means more agreement. Trust sits at the base because the tiers above it depend on it.</p><div class="panel"><div class="pyr">';
+  const all = [];
+  TIERS.forEach(function (tr) {
+    const ts = tierStats(tr[0]);
+    all.push({ name: tr[1], theme: tr[0], ts: ts });
+    h += '<div class="tier"><div class="tier-name">' + esc(tr[1]) + '</div>' + bar(ts) + '</div>';
+  });
+  const cl = tierStats("Clarity");
+  h += '<div class="tier foundation"><div class="tier-name">Clarity<small>The ground it stands on</small></div>' + bar(cl) + '</div></div>';
+  h += '<div class="legend" style="margin-top:16px"><span><i class="sq" style="background:var(--low)"></i>Disagree (1 or 2)</span><span><i class="sq" style="background:var(--mid)"></i>Neutral (3)</span><span><i class="sq" style="background:var(--high)"></i>Agree (4 or 5)</span></div></div>';
+
+  all.push({ name: "Clarity", theme: "Clarity", ts: cl });
+  const worst = all.slice().sort(function (a, b) { return b.ts.low - a.ts.low; })[0];
+  const best = all.slice().sort(function (a, b) { return b.ts.high - a.ts.high; })[0];
+  const order = ["Trust", "Conflict", "Commitment", "Accountability", "Collective results"];
+  let crack = null;
+  for (let k = 0; k < order.length; k++) {
+    const ts = tierStats(order[k]);
+    if (ts.low > ts.high) { crack = order[k]; break; }
+  }
+  let third;
+  if (crack === "Trust") third = 'Trust, the base, already has more people disagreeing than agreeing, so every tier above it stands on weak ground.';
+  else if (crack) third = 'Working up from trust, ' + (crack === "Conflict" ? "healthy conflict" : crack.toLowerCase()) + ' is the first tier where more people disagree than agree.';
+  else third = 'Working up from trust, no tier has more people disagreeing than agreeing.';
+  h += '<div class="callouts">' +
+    '<div class="callout"><b>Most disagreement</b>' + esc(worst.name) + ': ' + pct(worst.ts.low) + '% of ratings disagree.</div>' +
+    '<div class="callout"><b>Most agreement</b>' + esc(best.name) + ': ' + pct(best.ts.high) + '% of ratings agree.</div>' +
+    '<div class="callout"><b>First tier that gives way</b>' + third + '</div></div>';
+  return h;
+}
+
+/* ---------- render ---------- */
+const stage = document.getElementById("stage");
+function render() {
+  if (!data) { stage.innerHTML = '<div class="waiting">Connecting to the results</div>'; return; }
+  if (data.hidden) {
+    stage.innerHTML = '<div class="waiting">Waiting for answers.<br>Results appear once ' + data.min + ' people have responded.<small>' + data.n + ' so far</small></div>';
+    return;
+  }
+  const S = stats(data.counts);
+  stage.innerHTML = view === "map" ? viewMap(S) : (view === "divided" ? viewDivided(S) : viewPyramid(S));
+  const more = document.getElementById("moreBtn");
+  if (more) more.addEventListener("click", function () { showAll = !showAll; render(); });
+}
+
+function setLive(text, cls) {
+  document.getElementById("liveText").textContent = text;
+  document.getElementById("dot").className = "dot " + (cls || "");
+}
+
+function updateLiveText() {
+  if (paused) { setLive("Paused" + (data && !data.hidden ? " · " + data.n + " responses" : ""), "paused"); return; }
+  if (!data) { setLive("Connecting", "wait"); return; }
+  if (data.hidden) { setLive(data.n + " responses so far", "wait"); return; }
+  setLive((DEMO ? "Simulated · " : "Live · ") + data.n + " responses", "");
+}
+
+async function poll() {
+  if (paused) return;
+  try {
+    let next;
+    if (DEMO) next = demoCounts(demoSeed);
+    else {
+      const res = await fetch(ENDPOINT + (ENDPOINT.indexOf("?") === -1 ? "?" : "&") + "view=results&t=" + Date.now());
+      next = await res.json();
+      if (!next || next.ok !== true) throw new Error("bad feed");
+    }
+    const j = JSON.stringify(next);
+    if (j !== lastJSON) { lastJSON = j; data = next; render(); }
+    updateLiveText();
+  } catch (e) {
+    setLive("Reconnecting", "wait");
+  }
+}
+
+function setView(v) {
+  view = v;
+  document.querySelectorAll(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.view === v ? "true" : "false"); });
+  render();
+}
+document.querySelectorAll(".tab").forEach(function (b) { b.addEventListener("click", function () { setView(b.dataset.view); }); });
+function togglePause() {
+  paused = !paused;
+  document.getElementById("pauseBtn").textContent = paused ? "Resume" : "Pause";
+  updateLiveText();
+  if (!paused) poll();
+}
+document.getElementById("pauseBtn").addEventListener("click", togglePause);
+document.addEventListener("keydown", function (e) {
+  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+  if (e.key === "1") setView("map");
+  else if (e.key === "2") setView("divided");
+  else if (e.key === "3") setView("pyramid");
+  else if (e.key === "p" || e.key === "P") togglePause();
+  else if (e.key === "a" || e.key === "A") { showAll = !showAll; render(); }
+});
+if (DEMO) {
+  document.getElementById("demoBanner").style.display = "flex";
+  document.getElementById("reshuffle").addEventListener("click", function () { demoSeed = Math.floor(Math.random() * 100000); lastJSON = ""; poll(); });
+}
+render();
+poll();
+setInterval(poll, POLL_MS);
+</script>
+</body>
+</html>

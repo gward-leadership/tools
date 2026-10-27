@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance Culture Survey</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', serif;
+    background: #F7F5F0;
+    color: #1C1C1C;
+    min-height: 100vh;
+  }
+  .sans { font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .header {
+    background: #1C1C1C;
+    color: #F7F5F0;
+    padding: 28px clamp(16px, 5vw, 40px);
+    border-bottom: 4px solid #7B6FA0;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: normal;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .header p {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #A8A8A8;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+    max-width: 560px;
+    line-height: 1.5;
+  }
+  .instructions {
+    background: #EDE8F5;
+    border-left: 4px solid #7B6FA0;
+    padding: 20px clamp(16px, 5vw, 40px);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #3C3C3C;
+  }
+  .instructions p + p { margin-top: 10px; }
+  .step-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: #7B6FA0;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .container { padding: 8px clamp(16px, 5vw, 40px) 24px; max-width: 860px; margin: 0 auto; }
+  .promise {
+    background: white; border: 1px solid #E0DCF0; border-radius: 2px;
+    padding: 22px 24px; margin-top: 24px;
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.9rem; line-height: 1.75; color: #333;
+  }
+  .promise strong { color: #1C1C1C; }
+
+  .progress-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem; color: #888; padding: 22px 0 0; text-align: right;
+  }
+  .progress-bar-wrap { background: #E0DCF0; height: 4px; margin: 8px 0 22px; border-radius: 2px; }
+  .progress-bar { height: 4px; background: #7B6FA0; border-radius: 2px; transition: width 0.3s; width: 0; }
+
+  .scale-note {
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; color: #666;
+    margin: 18px 0 0; line-height: 1.6;
+  }
+
+  .question-block {
+    background: white; border-radius: 2px; margin-bottom: 18px; padding: 22px 24px;
+    border: 1px solid #E0DCF0; transition: border-color 0.2s;
+  }
+  .question-block.answered { border-color: #7B6FA0; }
+  .question-number {
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em;
+    color: #7B6FA0; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .question-text { font-size: 1rem; line-height: 1.65; color: #1C1C1C; margin-bottom: 18px; }
+  .likert-options { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .likert-option { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; }
+  .likert-option input[type="radio"] {
+    position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer;
+  }
+  .likert-circle {
+    width: 40px; height: 40px; border-radius: 50%; border: 2px solid #CCCAE0; background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; color: #888;
+    transition: all 0.15s;
+  }
+  .likert-option:hover .likert-circle { border-color: #7B6FA0; color: #7B6FA0; }
+  .likert-option input[type="radio"]:checked + .likert-circle {
+    background: #7B6FA0; border-color: #7B6FA0; color: white; font-weight: bold;
+  }
+  .likert-option input[type="radio"]:focus-visible + .likert-circle { outline: 3px solid #1C1C1C; outline-offset: 2px; }
+  .likert-ends {
+    display: flex; justify-content: space-between; gap: 12px; margin-top: 10px;
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; color: #888;
+  }
+
+  .open-heading { font-size: 1.05rem; font-weight: normal; margin: 30px 0 4px; }
+  .open-sub { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.82rem; color: #666; margin-bottom: 18px; line-height: 1.6; }
+  textarea {
+    width: 100%; min-height: 110px; resize: vertical;
+    font-family: 'Georgia', serif; font-size: 0.95rem; line-height: 1.6; color: #1C1C1C;
+    background: white; border: 1px solid #CCCAE0; border-radius: 2px; padding: 14px 16px;
+  }
+  textarea:focus { outline: 2px solid #7B6FA0; outline-offset: 1px; }
+  .open-block { margin-bottom: 22px; }
+  .open-block label { display: block; font-size: 1rem; line-height: 1.6; margin-bottom: 10px; }
+
+  .actions { max-width: 860px; margin: 28px auto 0; padding: 0 clamp(16px, 5vw, 40px) 60px; }
+  .submit-btn {
+    width: 100%; background: #1C1C1C; color: #F7F5F0; border: none; padding: 16px 24px;
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.9rem; letter-spacing: 0.08em;
+    text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.2s;
+  }
+  .submit-btn:hover { background: #7B6FA0; }
+  .submit-btn:disabled { background: #CCCAE0; cursor: not-allowed; color: #888; }
+  .status {
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; line-height: 1.6;
+    margin-top: 14px; color: #555; min-height: 1.4em;
+  }
+  .status.error { color: #8A2E2E; }
+
+  .thanks { display: none; text-align: center; padding: 70px 0 90px; }
+  .thanks h2 { font-weight: normal; font-size: 1.4rem; letter-spacing: 0.04em; margin-bottom: 16px; }
+  .thanks p {
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.92rem; line-height: 1.8; color: #444;
+    max-width: 480px; margin: 0 auto 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Performance Culture</h1>
+  <p>A short survey for the leadership group</p>
+</div>
+
+<div class="instructions">
+  <span class="step-label">Before you begin</span>
+  <p>Please answer as candidly as you can. Think about how the leadership group actually works from one week to the next, and not about how it is described in presentations or how you would like it to work. There are no right answers, and a first instinct is usually the most honest one.</p>
+  <p>The survey takes about seven minutes: 24 statements and two short questions in your own words.</p>
+</div>
+
+<div class="container" id="survey">
+
+  <div class="promise">
+    <strong>Your answers are anonymous.</strong> No names, email addresses or IP addresses are stored with your answers, and nobody can see what any one person said. Only the combined picture of the whole group will be shared, and no result is ever reported for a group of fewer than five people. The combined picture is used only to help the group understand how it works together.
+  </div>
+
+  <div class="progress-label" id="progressLabel">0 of 24 answered</div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+  <p class="scale-note">For each statement, choose the number that fits best, from <strong>1 (strongly disagree)</strong> to <strong>5 (strongly agree)</strong>.</p>
+  <div style="height:18px"></div>
+
+  <div id="questions"></div>
+
+  <h2 class="open-heading">In your own words</h2>
+  <p class="open-sub">Both questions are optional. Please describe situations and patterns, and do not name individuals. Your words may be summarised in themes and are quoted only where no one could be identified from them.</p>
+
+  <div class="open-block">
+    <label for="open1">What is the one thing that most limits performance in the organisation today?</label>
+    <textarea id="open1" maxlength="1500"></textarea>
+  </div>
+  <div class="open-block">
+    <label for="open2">If the leadership group changed one thing in how it works together this year, what would make the biggest difference to performance?</label>
+    <textarea id="open2" maxlength="1500"></textarea>
+  </div>
+</div>
+
+<div class="actions" id="actions">
+  <button class="submit-btn" id="submitBtn" disabled>Submit my answers</button>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+</div>
+
+<div class="container thanks" id="thanks">
+  <h2>Thank you</h2>
+  <p>Your answers have been recorded anonymously.</p>
+  <p>The combined picture of the whole group will be shared with everyone. You can close this page now.</p>
+</div>
+
+<script>
+/* Paste the web app URL from Google Apps Script between the quotation marks. */
+const ENDPOINT = "PASTE_WEB_APP_URL_HERE";
+
+/* The order here is the order of the columns in the results sheet and must match the script. */
+const ITEMS = [
+  "I can say in one sentence what excellent performance looks like in my own role.",
+  "The leadership group shares one definition of good performance, and not several.",
+  "Our priorities are clear enough that my team knows what to stop doing as well as what to start.",
+  "The targets I am held to connect directly to the work my people do each day.",
+  "In this group, people admit mistakes without fear of how it will be used against them.",
+  "I can say \"I don't know\" or \"I need help\" to my peers and be met with support.",
+  "My peers act in the interest of the whole organisation, and not only of their own area.",
+  "Information is shared across functions early, and not once it has become a problem.",
+  "When leaders disagree, it is said in the room and not afterwards in the corridor.",
+  "We challenge each other's ideas robustly without it becoming personal.",
+  "Difficult topics are raised before they turn into crises.",
+  "I give my peers honest feedback on their performance, even when it is uncomfortable.",
+  "Once a decision is made, everyone acts on it as though it were their own.",
+  "Important decisions are made at the speed the business needs.",
+  "People can disagree with a decision and still commit to it fully.",
+  "Decisions taken by the leadership group are carried through consistently across the organisation.",
+  "Leaders hold their peers to account for commitments, and not only their own direct reports.",
+  "Underperformance is addressed promptly, whoever is responsible.",
+  "When results fall short, the content we report internally reflects that.",
+  "The same standards apply at every level, including the top.",
+  "The results of the whole organisation take precedence over the results of my own area.",
+  "The values we state describe how we actually work, and not only how we speak about our work.",
+  "I act on what is not working, without waiting for others to move first.",
+  "We learn as much from what goes well as from what goes wrong."
+];
+
+const answers = new Array(ITEMS.length).fill(null);
+const submissionId = "r" + Array.from(crypto.getRandomValues(new Uint8Array(12)))
+  .map(b => (b % 36).toString(36)).join("");
+
+/* Show the statements in a random order so the themes are not visible as blocks. */
+const order = ITEMS.map((_, i) => i);
+for (let i = order.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [order[i], order[j]] = [order[j], order[i]];
+}
+
+const qWrap = document.getElementById("questions");
+order.forEach((itemIndex, pos) => {
+  const block = document.createElement("div");
+  block.className = "question-block";
+  block.id = "block" + itemIndex;
+  const opts = [1, 2, 3, 4, 5].map(v =>
+    '<label class="likert-option"><input type="radio" name="q' + itemIndex + '" value="' + v + '" aria-label="' + v + '">' +
+    '<span class="likert-circle">' + v + '</span></label>').join("");
+  block.innerHTML =
+    '<div class="question-number">Statement ' + (pos + 1) + ' of ' + ITEMS.length + '</div>' +
+    '<div class="question-text"></div>' +
+    '<div class="likert-options" role="radiogroup">' + opts + '</div>' +
+    '<div class="likert-ends"><span>Strongly disagree</span><span>Strongly agree</span></div>';
+  block.querySelector(".question-text").textContent = ITEMS[itemIndex];
+  block.addEventListener("change", e => {
+    if (e.target.name === "q" + itemIndex) {
+      answers[itemIndex] = parseInt(e.target.value, 10);
+      block.classList.add("answered");
+      update();
+    }
+  });
+  qWrap.appendChild(block);
+});
+
+const submitBtn = document.getElementById("submitBtn");
+const statusEl = document.getElementById("status");
+
+function update() {
+  const done = answers.filter(a => a !== null).length;
+  document.getElementById("progressLabel").textContent = done + " of " + ITEMS.length + " answered";
+  document.getElementById("progressBar").style.width = (done / ITEMS.length * 100) + "%";
+  submitBtn.disabled = done < ITEMS.length;
+  if (done === ITEMS.length && statusEl.textContent === "") {
+    statusEl.textContent = "All 24 statements answered. The two written questions are optional.";
+  }
+}
+
+function setStatus(text, isError) {
+  statusEl.textContent = text;
+  statusEl.className = "status" + (isError ? " error" : "");
+}
+
+submitBtn.addEventListener("click", async () => {
+  if (answers.some(a => a === null)) return;
+  if (ENDPOINT.indexOf("PASTE_") === 0) {
+    setStatus("This copy of the survey is not connected to a results sheet yet, so nothing has been sent.", true);
+    return;
+  }
+  submitBtn.disabled = true;
+  setStatus("Sending your answers...", false);
+  const payload = {
+    id: submissionId,
+    answers: answers,
+    open1: document.getElementById("open1").value,
+    open2: document.getElementById("open2").value
+  };
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const out = await res.json();
+    if (!out || out.ok !== true) throw new Error("not saved");
+    document.getElementById("survey").style.display = "none";
+    document.getElementById("actions").style.display = "none";
+    document.querySelector(".instructions").style.display = "none";
+    document.getElementById("thanks").style.display = "block";
+    window.scrollTo(0, 0);
+  } catch (err) {
+    submitBtn.disabled = false;
+    setStatus("Your answers have not been saved. Please check your connection and press Submit again. Your answers are still on this page, and pressing Submit twice will not record them twice.", true);
+  }
+});
+</script>
+</body>
+</html>
