@@ -112,6 +112,66 @@
   .callouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 22px; }
   .callout { background: var(--card); border: 1px solid var(--line); border-radius: 2px; padding: 14px 18px; font-size: 1rem; line-height: 1.55; }
   .callout b { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--purple); display: block; margin-bottom: 4px; }
+
+  /* segments, sorting and categories */
+  .seg-chips, .controls, .toggle { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .seg-chips { margin-bottom: 12px; }
+  .controls { margin: 18px 0 0; }
+  .ctl-label { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+  .segbtn {
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+    background: transparent; color: var(--ink); border: 2px solid var(--ink); border-radius: 2px; padding: 7px 11px; cursor: pointer;
+  }
+  .segbtn:hover { background: #EDE8F5; }
+  .segbtn[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .segbtn:focus-visible, .cat-row:focus-visible { outline: 3px solid var(--purple); outline-offset: 2px; }
+  .segbtn .ct { opacity: 0.7; margin-left: 7px; }
+  .side-scroll { max-height: 78vh; overflow-y: auto; }
+  .prompt { font-style: italic; background: #EDE8F5; border-left: 4px solid var(--purple); padding: 10px 14px; margin-bottom: 8px; font-size: 0.98rem; line-height: 1.5; }
+  .empty { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.9rem; color: var(--muted); padding: 12px 0; }
+  .zone-nums { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.88rem; line-height: 1.5; }
+  .zone-nums b { font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .seg-item { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .seg-item .rk { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.1rem; color: var(--purple); text-align: center; }
+  .seg-item .stmt { font-size: 0.98rem; }
+  .rowstrip svg { width: 100%; max-width: 340px; height: auto; display: block; margin-top: 6px; }
+  .avg { color: var(--muted); margin-left: auto; }
+  .splitline { flex-wrap: wrap; }
+
+  .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .panel-head h2 { margin-bottom: 0; }
+  .cat-head, .cat-row { display: grid; grid-template-columns: 190px 210px minmax(0, 1fr) 64px 200px; gap: 14px; align-items: center; }
+  @media (max-width: 1100px) { .cat-head, .cat-row { grid-template-columns: 150px minmax(0, 1fr) 56px; } .cat-head > :nth-child(2), .cat-head > :nth-child(5), .cat-chips { grid-column: 1 / -1; } .cat-pcts { grid-column: 1 / -1; } }
+  .cat-head { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; color: var(--muted); padding: 0 10px; }
+  .bar-ends { display: flex; justify-content: space-between; }
+  .cat-row { width: 100%; text-align: left; background: transparent; border: 1px solid transparent; border-top: 1px solid var(--line); padding: 12px 10px; cursor: pointer; font: inherit; color: inherit; }
+  .cat-row:hover { background: #FAF9FD; }
+  .cat-row.on { background: #EDE8F5; border-color: var(--purple); }
+  .cat-name { display: flex; align-items: center; gap: 9px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.95rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  .cat-name i { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 11px; }
+  .cat-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .vchip { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: bold; padding: 4px 9px; border-radius: 2px; white-space: nowrap; }
+  .v-need { background: var(--low); color: #fff; }
+  .v-mixed { background: var(--zone-lukewarm); color: #555; }
+  .v-hold { background: #CFE6E6; color: #1F5E63; }
+  .v-strong { background: var(--high); color: #fff; }
+  .v-split { background: var(--zone-contested); color: #7A5A12; }
+  .netbar { position: relative; display: block; height: 26px; background: #EFEDE7; border-radius: 2px; min-width: 0; }
+  .netbar .zero { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: rgba(28,28,28,0.6); z-index: 2; }
+  .netfill { position: absolute; top: 0; bottom: 0; }
+  .netfill.neg { background: var(--low); }
+  .netfill.pos { background: var(--high); }
+  .cat-net { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.35rem; font-weight: bold; text-align: right; }
+  .cat-net.neg { color: var(--low); }
+  .cat-net.pos { color: var(--high); }
+  .cat-pcts { display: flex; gap: 14px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.82rem; }
+  .note { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; color: var(--muted); margin-top: 12px; line-height: 1.5; }
+  .netchip { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: bold; }
+  .netchip.neg { color: var(--low); }
+  .netchip.pos { color: var(--high); }
+  .cards { margin-top: 18px; }
+  .group-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 4px 2px; border-bottom: 2px solid var(--ink); margin-top: 12px; }
+  .group-head:first-child { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -134,7 +194,7 @@
 
 <div class="tabs" role="tablist" aria-label="Views">
   <button class="tab" role="tab" data-view="map" aria-selected="true">The map</button>
-  <button class="tab" role="tab" data-view="divided" aria-selected="false">Most divided</button>
+  <button class="tab" role="tab" data-view="sort" aria-selected="false">Sort and compare</button>
   <button class="tab" role="tab" data-view="pyramid" aria-selected="false">The pyramid</button>
 </div>
 
@@ -195,7 +255,10 @@ const COLORS = { low: "#B5532F", mid: "#C9C4B8", high: "#2F7F86" };
 const params = new URLSearchParams(location.search);
 const DEMO = ENDPOINT.indexOf("PASTE_") === 0 || params.has("demo");
 let view = "map";
-let showAll = false;
+let seg = null;            /* selected segment on the map */
+let sortMode = "divided";  /* divided | low | high | category */
+let catFilter = null;      /* a theme name, or null for all */
+let scoreOrder = "score";  /* score | pyramid */
 let paused = false;
 let data = null;       /* {n, hidden, counts} */
 let lastJSON = "";
@@ -287,22 +350,63 @@ function dotStrip(c, globalMax) {
 }
 
 /* ---------- views ---------- */
+/* ---------- segments of the map ---------- */
+const ZONES = [
+  ["strength", "Shared strength", "What makes this true here, and how do we protect it?"],
+  ["weakness", "Shared weakness", "What is this costing us, and what would have to change first?"],
+  ["contested", "Contested", "What might explain why people in this room see the same thing differently?"],
+  ["lukewarm", "Lukewarm", "Few object and few are enthusiastic. Which of these would matter most if it were lifted?"]
+];
+const SEG_CYCLE = [null, "strength", "weakness", "contested", "lukewarm"];
+
+function zoneOf(t) {
+  if (t.sd >= DIVIDED_AT) return "contested";
+  if (t.mean < 2.5) return "weakness";
+  if (t.mean > 3.5) return "strength";
+  return "lukewarm";
+}
+function rankInZone(list, z) {
+  const a = list.slice();
+  if (z === "strength") a.sort(function (x, y) { return y.mean - x.mean || x.sd - y.sd || x.i - y.i; });
+  else if (z === "weakness") a.sort(function (x, y) { return x.mean - y.mean || x.sd - y.sd || x.i - y.i; });
+  else if (z === "contested") a.sort(function (x, y) { return y.sd - x.sd || x.i - y.i; });
+  else a.sort(function (x, y) { return Math.abs(x.mean - 3) - Math.abs(y.mean - 3) || x.i - y.i; });
+  return a;
+}
+function netOf(t) { return t.high - t.low; }
+function signed(net) {
+  const p = Math.round(net * 100);
+  return (p > 0 ? "+" : (p < 0 ? "−" : "")) + Math.abs(p);
+}
+function splitLine(t) {
+  return '<div class="splitline"><span class="lo">' + pct(t.low) + '% disagree</span><span style="color:#777">' + pct(t.neu) + '% neutral</span><span class="hi">' + pct(t.high) + '% agree</span><span class="avg">average ' + t.mean.toFixed(1) + '</span></div>';
+}
+function globalMaxOf(S) { return Math.max.apply(null, S.map(function (t) { return Math.max.apply(null, t.c); })); }
+
 function viewMap(S) {
   const W = 860, H = 520, L = 64, R = 16, T = 16, B = 62;
   const y0 = 0.3, y1 = 1.9;
   const px = function (x) { return L + (x - 1) / 4 * (W - L - R); };
   const py = function (y) { return T + (y1 - y) / (y1 - y0) * (H - T - B); };
   const yDiv = py(DIVIDED_AT), yBot = H - B;
+  const rect = {
+    contested: [L, T, W - L - R, yDiv - T],
+    weakness: [L, yDiv, px(2.5) - L, yBot - yDiv],
+    lukewarm: [px(2.5), yDiv, px(3.5) - px(2.5), yBot - yDiv],
+    strength: [px(3.5), yDiv, W - R - px(3.5), yBot - yDiv]
+  };
+  const fill = { contested: "var(--zone-contested)", weakness: "var(--zone-weak)", lukewarm: "var(--zone-lukewarm)", strength: "var(--zone-strong)" };
   let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Map of statements by average rating and how divided the room is">';
-  s += '<rect x="' + L + '" y="' + T + '" width="' + (W - L - R) + '" height="' + (yDiv - T) + '" fill="var(--zone-contested)"/>';
-  s += '<rect x="' + L + '" y="' + yDiv + '" width="' + (px(2.5) - L) + '" height="' + (yBot - yDiv) + '" fill="var(--zone-weak)"/>';
-  s += '<rect x="' + px(2.5) + '" y="' + yDiv + '" width="' + (px(3.5) - px(2.5)) + '" height="' + (yBot - yDiv) + '" fill="var(--zone-lukewarm)"/>';
-  s += '<rect x="' + px(3.5) + '" y="' + yDiv + '" width="' + (W - R - px(3.5)) + '" height="' + (yBot - yDiv) + '" fill="var(--zone-strong)"/>';
+  Object.keys(rect).forEach(function (z) {
+    const r = rect[z];
+    s += '<rect x="' + r[0] + '" y="' + r[1] + '" width="' + r[2] + '" height="' + r[3] + '" fill="' + fill[z] + '" fill-opacity="' + (seg && seg !== z ? 0.3 : 1) + '"/>';
+  });
   const zl = 'font-family="Helvetica Neue, Arial, sans-serif" font-size="13" letter-spacing="1.2" font-weight="bold"';
-  s += '<text x="' + (L + 12) + '" y="' + (T + 22) + '" ' + zl + ' fill="#7A5A12">CONTESTED</text>';
-  s += '<text x="' + (L + 12) + '" y="' + (yBot - 12) + '" ' + zl + ' fill="#8A3F20">SHARED WEAKNESS</text>';
-  s += '<text x="' + ((px(2.5) + px(3.5)) / 2) + '" y="' + (yBot - 12) + '" text-anchor="middle" ' + zl + ' fill="#666">LUKEWARM</text>';
-  s += '<text x="' + (W - R - 12) + '" y="' + (yBot - 12) + '" text-anchor="end" ' + zl + ' fill="#276468">SHARED STRENGTH</text>';
+  const dim = function (z) { return seg && seg !== z ? ' opacity="0.45"' : ''; };
+  s += '<text x="' + (L + 12) + '" y="' + (T + 22) + '" ' + zl + ' fill="#7A5A12"' + dim("contested") + '>CONTESTED</text>';
+  s += '<text x="' + (L + 12) + '" y="' + (yBot - 12) + '" ' + zl + ' fill="#8A3F20"' + dim("weakness") + '>SHARED WEAKNESS</text>';
+  s += '<text x="' + ((px(2.5) + px(3.5)) / 2) + '" y="' + (yBot - 12) + '" text-anchor="middle" ' + zl + ' fill="#666"' + dim("lukewarm") + '>LUKEWARM</text>';
+  s += '<text x="' + (W - R - 12) + '" y="' + (yBot - 12) + '" text-anchor="end" ' + zl + ' fill="#276468"' + dim("strength") + '>SHARED STRENGTH</text>';
   for (let x = 1; x <= 5; x++) {
     s += '<line x1="' + px(x) + '" y1="' + T + '" x2="' + px(x) + '" y2="' + yBot + '" stroke="#fff" stroke-opacity="0.7"/>';
     s += '<text x="' + px(x) + '" y="' + (yBot + 22) + '" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="14" fill="#444">' + x + '</text>';
@@ -311,6 +415,10 @@ function viewMap(S) {
   s += '<text x="' + (L - 12) + '" y="' + (T + 14) + '" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="12" fill="#444">Divided</text>';
   s += '<text x="' + (L - 12) + '" y="' + (yBot - 2) + '" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="12" fill="#444">United</text>';
   s += '<text transform="translate(16,' + ((T + yBot) / 2) + ') rotate(-90)" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="13" fill="#444">How divided the room is</text>';
+  if (seg) {
+    const r = rect[seg];
+    s += '<rect x="' + (r[0] + 1.5) + '" y="' + (r[1] + 1.5) + '" width="' + (r[2] - 3) + '" height="' + (r[3] - 3) + '" fill="none" stroke="#7B6FA0" stroke-width="3"/>';
+  }
 
   /* positions, nudged apart so numbered dots stay readable */
   const pts = S.map(function (t) {
@@ -334,7 +442,8 @@ function viewMap(S) {
     p.x = Math.min(W - R - 15, Math.max(L + 15, p.x));
     p.y = Math.min(yBot - 16, Math.max(T + 15, p.y));
     const col = THEME_COLORS[p.t.theme];
-    s += '<g><title>' + p.t.no + '. ' + esc(p.t.text) + '</title>';
+    const faded = seg && zoneOf(p.t) !== seg;
+    s += '<g opacity="' + (faded ? 0.18 : 1) + '"><title>' + p.t.no + '. ' + esc(p.t.text) + '</title>';
     s += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="14" fill="' + col + '" stroke="#fff" stroke-width="2"/>';
     s += '<text x="' + p.x.toFixed(1) + '" y="' + (p.y + 4.5).toFixed(1) + '" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="12" font-weight="bold" fill="#fff">' + p.t.no + '</text></g>';
   });
@@ -344,35 +453,134 @@ function viewMap(S) {
   THEMES.forEach(function (t) { legend += '<span><i style="background:' + THEME_COLORS[t] + '"></i>' + esc(t) + '</span>'; });
   legend += '</div>';
 
-  const top = S.slice().sort(function (a, b) { return b.sd - a.sd || a.i - b.i; }).slice(0, 3);
-  let side = '<div class="panel"><h2>Where the room is most divided</h2>';
-  top.forEach(function (t) {
-    side += '<div class="side-item"><span class="no">' + t.no + '</span>' + esc(t.text) +
-      '<div class="splitline"><span class="lo">' + pct(t.low) + '% disagree</span><span class="hi">' + pct(t.high) + '% agree</span></div></div>';
+  /* side panel: segment selector and the ranked statements of the chosen segment */
+  const byZone = {};
+  ZONES.forEach(function (z) { byZone[z[0]] = rankInZone(S.filter(function (t) { return zoneOf(t) === z[0]; }), z[0]); });
+  let side = '<div class="panel side-scroll"><div class="seg-chips">';
+  side += '<button type="button" class="segbtn" data-seg="all" aria-pressed="' + (seg === null) + '">All<span class="ct">' + S.length + '</span></button>';
+  ZONES.forEach(function (z) {
+    side += '<button type="button" class="segbtn" data-seg="' + z[0] + '" aria-pressed="' + (seg === z[0]) + '">' + z[1] + '<span class="ct">' + byZone[z[0]].length + '</span></button>';
   });
   side += '</div>';
+  const gmax = globalMaxOf(S);
+  if (!seg) {
+    side += '<p class="prompt">Choose a segment to see every statement in it, ranked. The numbers below match the dots on the map.</p>';
+    ZONES.forEach(function (z) {
+      const nums = byZone[z[0]].map(function (t) { return t.no; }).join(" · ");
+      side += '<div class="zone-nums"><b>' + z[1] + '</b><span>' + (nums || "none") + '</span></div>';
+    });
+  } else {
+    const z = ZONES.filter(function (q) { return q[0] === seg; })[0];
+    side += '<p class="prompt">' + esc(z[2]) + '</p>';
+    if (!byZone[seg].length) side += '<p class="empty">No statement sits here at the moment.</p>';
+    byZone[seg].forEach(function (t, idx) {
+      side += '<div class="seg-item"><div class="rk">' + (idx + 1) + '</div><div>' +
+        '<div class="meta"><span class="tag" style="color:' + THEME_COLORS[t.theme] + '">' + esc(t.theme) + ' · statement ' + t.no + '</span></div>' +
+        '<p class="stmt">' + esc(t.text) + '</p>' + splitLine(t) +
+        '<div class="rowstrip">' + dotStrip(t.c, gmax) + '</div></div></div>';
+    });
+  }
+  side += '</div>';
 
-  const nContested = S.filter(function (t) { return t.sd >= DIVIDED_AT; }).length;
+  const nContested = byZone.contested.length;
   const lead = nContested === 0
     ? 'No statement splits the room sharply. Look at the shared strengths and weaknesses.'
-    : nContested + ' of the 24 statements split the room. The average hides it. Each number below is one statement, placed by what people said on average and by how far apart they are.';
+    : nContested + ' of the 24 statements split the room. The average hides it. Each number is one statement, placed by what people said on average and by how far apart they are.';
   return '<p class="lead">' + lead + '</p><div class="map-wrap"><div class="panel">' + s + legend + '</div>' + side + '</div>';
 }
 
-function viewDivided(S) {
-  const sorted = S.slice().sort(function (a, b) { return b.sd - a.sd || a.i - b.i; });
-  const globalMax = Math.max.apply(null, S.map(function (t) { return Math.max.apply(null, t.c); }));
-  const list = showAll ? sorted : sorted.slice(0, 6);
-  let h = '<p class="lead">Every dot is one person. Where the dots sit in two groups with a gap between them, the room holds two different views of the same reality.</p><div class="cards">';
-  list.forEach(function (t, idx) {
-    const lab = label(t.sd);
-    h += '<article class="card"><div class="rank">' + (idx + 1) + '</div><div>' +
-      '<div class="meta"><span class="tag" style="color:' + THEME_COLORS[t.theme] + '">' + esc(t.theme) + ' · statement ' + t.no + '</span><span class="chip ' + lab[1] + '">' + lab[0] + '</span></div>' +
-      '<p class="stmt">' + esc(t.text) + '</p>' +
-      '<div class="splitline"><span class="lo">' + pct(t.low) + '% disagree</span><span style="color:#777">' + pct(t.neu) + '% neutral</span><span class="hi">' + pct(t.high) + '% agree</span></div>' +
-      '</div>' + dotStrip(t.c, globalMax) + '</article>';
+/* ---------- page two: categories and sorting ---------- */
+function catStats(S) {
+  return THEMES.map(function (theme) {
+    const items = S.filter(function (t) { return t.theme === theme; });
+    let low = 0, neu = 0, high = 0, n = 0, div = 0;
+    items.forEach(function (t) {
+      low += t.c[0] + t.c[1]; neu += t.c[2]; high += t.c[3] + t.c[4]; n += t.n;
+      if (t.sd >= DIVIDED_AT) div++;
+    });
+    const lo = n ? low / n : 0, ne = n ? neu / n : 0, hi = n ? high / n : 0;
+    return { theme: theme, items: items, low: lo, neu: ne, high: hi, net: hi - lo, divided: div };
   });
-  h += '</div><div class="more"><button class="btn" id="moreBtn" type="button">' + (showAll ? 'Show the six most divided' : 'Show all 24 statements') + '</button></div>';
+}
+function verdict(net) {
+  const p = net * 100;
+  if (p <= -10) return ["Needs attention", "need"];
+  if (p < 10) return ["Mixed", "mixed"];
+  if (p < 30) return ["Holding", "hold"];
+  return ["Strong", "strong"];
+}
+function netBar(net) {
+  const half = 70;
+  const v = Math.max(-half, Math.min(half, net * 100));
+  const x = 50 + v * (50 / half);
+  const l = Math.min(50, x), w = Math.abs(x - 50);
+  return '<span class="netbar"><span class="zero"></span><span class="netfill ' + (net < 0 ? 'neg' : 'pos') + '" style="left:' + l.toFixed(2) + '%;width:' + w.toFixed(2) + '%"></span></span>';
+}
+function sortStatements(list, mode) {
+  const a = list.slice();
+  if (mode === "divided") a.sort(function (x, y) { return y.sd - x.sd || x.i - y.i; });
+  else if (mode === "low") a.sort(function (x, y) { return netOf(x) - netOf(y) || x.mean - y.mean || x.i - y.i; });
+  else a.sort(function (x, y) { return netOf(y) - netOf(x) || y.mean - x.mean || x.i - y.i; });
+  return a;
+}
+function cardHTML(t, rank, gmax) {
+  const lab = label(t.sd);
+  const net = netOf(t);
+  return '<article class="card"><div class="rank">' + rank + '</div><div>' +
+    '<div class="meta"><span class="tag" style="color:' + THEME_COLORS[t.theme] + '">' + esc(t.theme) + ' · statement ' + t.no + '</span><span class="chip ' + lab[1] + '">' + lab[0] + '</span><span class="netchip ' + (net < 0 ? 'neg' : 'pos') + '">net ' + signed(net) + '</span></div>' +
+    '<p class="stmt">' + esc(t.text) + '</p>' + splitLine(t) +
+    '</div>' + dotStrip(t.c, gmax) + '</article>';
+}
+
+function viewSort(S) {
+  const cats = catStats(S);
+  const pyramidOrder = ["Collective results", "Accountability", "Commitment", "Conflict", "Trust", "Clarity"];
+  const ordered = cats.slice().sort(function (a, b) {
+    if (scoreOrder === "pyramid") return pyramidOrder.indexOf(a.theme) - pyramidOrder.indexOf(b.theme);
+    return a.net - b.net;
+  });
+  const gmax = globalMaxOf(S);
+
+  let h = '<p class="lead">Start with the six categories. Each bar shows how many more people agree than disagree, so a bar to the left means the room is saying this is a problem. Below, sort the statements to see what sits behind each result.</p>';
+
+  h += '<div class="panel"><div class="panel-head"><h2>The six categories</h2><div class="toggle"><span class="ctl-label">Order</span>' +
+    '<button type="button" class="segbtn" data-order="score" aria-pressed="' + (scoreOrder === "score") + '">Needs attention first</button>' +
+    '<button type="button" class="segbtn" data-order="pyramid" aria-pressed="' + (scoreOrder === "pyramid") + '">Pyramid order</button></div></div>';
+  h += '<div class="cat-head"><span></span><span></span><span class="bar-ends"><span>← More disagree</span><span>More agree →</span></span><span></span><span></span></div>';
+  ordered.forEach(function (c) {
+    const v = verdict(c.net);
+    h += '<button type="button" class="cat-row' + (catFilter === c.theme ? ' on' : '') + '" data-cat="' + esc(c.theme) + '" title="Show the statements in this category">' +
+      '<span class="cat-name"><i style="background:' + THEME_COLORS[c.theme] + '"></i>' + esc(c.theme) + '</span>' +
+      '<span class="cat-chips"><span class="vchip v-' + v[1] + '">' + v[0] + '</span>' + (c.divided >= 2 ? '<span class="vchip v-split">Split room</span>' : '') + '</span>' +
+      netBar(c.net) +
+      '<span class="cat-net ' + (c.net < 0 ? 'neg' : 'pos') + '">' + signed(c.net) + '</span>' +
+      '<span class="cat-pcts"><b class="lo">' + pct(c.low) + '% disagree</b><b class="hi">' + pct(c.high) + '% agree</b></span></button>';
+  });
+  h += '<p class="note">Net score is the share who agree minus the share who disagree, across every rating in the category. Neutral answers are left out of the score.</p></div>';
+
+  h += '<div class="controls"><span class="ctl-label">Sort statements by</span>';
+  [["divided", "Most divided"], ["low", "Lowest scoring"], ["high", "Highest scoring"], ["category", "Category"]].forEach(function (m) {
+    h += '<button type="button" class="segbtn" data-sort="' + m[0] + '" aria-pressed="' + (sortMode === m[0]) + '">' + m[1] + '</button>';
+  });
+  h += '</div><div class="controls"><span class="ctl-label">Show</span><button type="button" class="segbtn" data-filter="all" aria-pressed="' + (catFilter === null) + '">All categories</button>';
+  THEMES.forEach(function (t) {
+    h += '<button type="button" class="segbtn" data-filter="' + esc(t) + '" aria-pressed="' + (catFilter === t) + '">' + esc(t) + '</button>';
+  });
+  h += '</div>';
+
+  h += '<div class="cards">';
+  if (sortMode === "category") {
+    ordered.forEach(function (c) {
+      if (catFilter && catFilter !== c.theme) return;
+      const v = verdict(c.net);
+      h += '<div class="group-head"><span class="cat-name"><i style="background:' + THEME_COLORS[c.theme] + '"></i>' + esc(c.theme) + '</span><span class="vchip v-' + v[1] + '">' + v[0] + '</span><span class="cat-net ' + (c.net < 0 ? 'neg' : 'pos') + '">net ' + signed(c.net) + '</span></div>';
+      sortStatements(c.items, "low").forEach(function (t, idx) { h += cardHTML(t, idx + 1, gmax); });
+    });
+  } else {
+    const list = sortStatements(S.filter(function (t) { return !catFilter || t.theme === catFilter; }), sortMode);
+    list.forEach(function (t, idx) { h += cardHTML(t, idx + 1, gmax); });
+  }
+  h += '</div>';
   return h;
 }
 
@@ -394,7 +602,7 @@ function viewPyramid(S) {
     }
     return '<div class="bar-area"><div class="bar wide"><div class="centre"></div>' + seg('low', a, b, ts.low) + seg('mid', b, c, ts.neu) + seg('high', c, d, ts.high) + '</div></div>';
   }
-  let h = '<p class="lead">Each tier shows the share of ratings that disagree, are neutral, or agree. Bars are centred on the neutral ratings, so a lean to the left means more disagreement and a lean to the right means more agreement. Trust sits at the base because the tiers above it depend on it.</p><div class="panel"><div class="pyr">';
+  let h = '<p class="lead">Each tier shows the share of ratings that disagree, are neutral, or agree. Each bar is 100% of the ratings in that tier, on the same scale throughout, and it is centred on the neutral ratings. A lean to the left means more disagreement and a lean to the right means more agreement. Trust sits at the base because the tiers above it depend on it.</p><div class="panel"><div class="pyr">';
   const all = [];
   TIERS.forEach(function (tr) {
     const ts = tierStats(tr[0]);
@@ -434,9 +642,9 @@ function render() {
     return;
   }
   const S = stats(data.counts);
-  stage.innerHTML = view === "map" ? viewMap(S) : (view === "divided" ? viewDivided(S) : viewPyramid(S));
-  const more = document.getElementById("moreBtn");
-  if (more) more.addEventListener("click", function () { showAll = !showAll; render(); });
+  const y = window.scrollY;
+  stage.innerHTML = view === "map" ? viewMap(S) : (view === "sort" ? viewSort(S) : viewPyramid(S));
+  window.scrollTo(0, y);
 }
 
 function setLive(text, cls) {
@@ -475,6 +683,16 @@ function setView(v) {
   render();
 }
 document.querySelectorAll(".tab").forEach(function (b) { b.addEventListener("click", function () { setView(b.dataset.view); }); });
+stage.addEventListener("click", function (e) {
+  const b = e.target.closest("[data-seg],[data-sort],[data-cat],[data-filter],[data-order]");
+  if (!b) return;
+  if (b.dataset.seg) seg = b.dataset.seg === "all" ? null : b.dataset.seg;
+  else if (b.dataset.sort) sortMode = b.dataset.sort;
+  else if (b.dataset.cat) catFilter = catFilter === b.dataset.cat ? null : b.dataset.cat;
+  else if (b.dataset.filter) catFilter = b.dataset.filter === "all" ? null : b.dataset.filter;
+  else if (b.dataset.order) scoreOrder = b.dataset.order;
+  render();
+});
 function togglePause() {
   paused = !paused;
   document.getElementById("pauseBtn").textContent = paused ? "Resume" : "Pause";
@@ -485,10 +703,14 @@ document.getElementById("pauseBtn").addEventListener("click", togglePause);
 document.addEventListener("keydown", function (e) {
   if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
   if (e.key === "1") setView("map");
-  else if (e.key === "2") setView("divided");
+  else if (e.key === "2") setView("sort");
   else if (e.key === "3") setView("pyramid");
   else if (e.key === "p" || e.key === "P") togglePause();
-  else if (e.key === "a" || e.key === "A") { showAll = !showAll; render(); }
+  else if ((e.key === "ArrowRight" || e.key === "ArrowLeft") && view === "map") {
+    const k = SEG_CYCLE.indexOf(seg) + (e.key === "ArrowRight" ? 1 : -1);
+    seg = SEG_CYCLE[(k + SEG_CYCLE.length) % SEG_CYCLE.length];
+    render();
+  }
 });
 if (DEMO) {
   document.getElementById("demoBanner").style.display = "flex";
