@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lencioni and Hackman Diagnostic</title>
+<style>
+:root{--blue:#0072B9;--navy:#0A2A47;--orange:#F37022;--light:#F2F6FA;--line:#D3DEE9;--mute:#5B6F84;--white:#fff;--pale:#E6F0F8}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--light);color:var(--navy);font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:Georgia,'Times New Roman',serif;color:var(--navy);margin:0}
+.wrap{max-width:600px;margin:0 auto;padding:20px 16px 56px}
+.wide{max-width:1280px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin:8px 0 6px}
+h1{font-size:26px;line-height:1.2}
+p.lead{color:var(--mute);font-size:15px;line-height:1.5;margin:10px 0 18px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 12px}
+.card .q{font-size:15px;line-height:1.45;margin:0 0 12px}
+.part{margin:26px 0 8px}
+.part h2{font-size:21px}
+.part p{margin:4px 0 0;color:var(--mute);font-size:14px;line-height:1.45}
+.opts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.opt{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 0 7px;text-align:center;cursor:pointer;font:inherit;color:var(--navy)}
+.opt b{display:block;font-family:Georgia,serif;font-size:20px}
+.opt span{display:block;font-size:10px;color:var(--mute);margin-top:2px;line-height:1.15}
+.opt.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.opt.on span{color:#dcebf6}
+.row{display:flex;align-items:center;gap:12px}
+.val{font-family:Georgia,serif;font-size:30px;font-weight:700;color:var(--blue);min-width:44px;text-align:right}
+.val.off{color:#9fb1c4;font-size:14px;font-family:Arial,sans-serif;font-weight:400}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:44px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:#C7D3DF}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:#C7D3DF}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 1px 4px rgba(10,42,71,.35);margin-top:-13px}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 1px 4px rgba(10,42,71,.35)}
+input[type=range].untouched::-webkit-slider-thumb{background:#9fb1c4}
+input[type=range].untouched::-moz-range-thumb{background:#9fb1c4}
+.poles{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin:0 56px 0 0}
+textarea{font:inherit;font-size:16px;width:100%;min-height:90px;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--navy);background:#fff;resize:vertical}
+button.btn{font:inherit;font-weight:700;border:0;border-radius:12px;padding:15px 18px;font-size:16px;cursor:pointer}
+.primary{background:var(--blue);color:#fff;width:100%}
+.primary:disabled{background:#9fb1c4;cursor:not-allowed}
+.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.msg{font-size:14px;color:var(--mute);text-align:center;margin:12px 0 0;min-height:20px}
+.err{color:#B3261E}
+input[type=text]{font:inherit;font-size:18px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;width:100%;background:#fff;color:var(--navy)}
+.sticky{position:sticky;top:0;background:rgba(242,246,250,.95);padding:8px 0;font-size:13px;color:var(--mute);z-index:5;text-align:right}
+.hide{display:none!important}
+.done{text-align:center;padding:34px 10px}
+.done h2{font-size:26px;margin-bottom:8px}
+/* facilitator */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.qrbox{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.qrbox svg{width:120px;height:120px;display:block}
+.qrbox .t{font-size:13px;color:var(--mute);line-height:1.45;max-width:230px}
+.qrbox .t b{color:var(--navy);font-size:15px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 6px}
+.tab{background:#fff;border:1px solid var(--line);color:var(--navy);padding:10px 16px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+.tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 24px;margin-top:12px}
+.panel h2{font-size:26px}
+.panel .note{color:var(--mute);font-size:14px;margin:4px 0 16px}
+.m{display:grid;grid-template-columns:240px 1fr 150px 150px;gap:18px;align-items:center;padding:10px 0;border-top:1px solid #EEF3F8}
+.m:first-of-type{border-top:0}
+.m .lab{font-weight:700;font-size:17px;line-height:1.25}
+.m .lab small{display:block;font-weight:400;color:var(--mute);font-size:12px;margin-top:2px}
+.num{font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
+.num b{display:block;font-family:Georgia,serif;font-size:28px;color:var(--navy);text-transform:none;letter-spacing:0}
+.track{position:relative;height:34px}
+.track .base{position:absolute;left:0;right:0;top:15px;height:4px;background:#C7D3DF;border-radius:2px}
+.track .tick{position:absolute;top:10px;width:1px;height:14px;background:#B6C4D3}
+.track .range{position:absolute;top:9px;height:16px;background:rgba(0,114,185,.22);border:1px solid rgba(0,114,185,.55);border-radius:8px;min-width:6px}
+.track .mean{position:absolute;top:3px;width:4px;height:28px;background:var(--blue);border-radius:2px;margin-left:-2px}
+.divd{display:grid;grid-template-columns:1fr 1fr 150px;gap:18px;align-items:center;padding:10px 0;border-top:1px solid #EEF3F8}
+.ans{padding:12px 14px;background:var(--light);border-radius:10px;margin:8px 0;line-height:1.45;white-space:pre-wrap}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px;font-size:14px;color:var(--mute)}
+.bar .n{font-family:Georgia,serif;font-size:22px;color:var(--navy)}
+@media(max-width:900px){.m,.divd{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="vEntry" class="wrap hide">
+  <div class="eyebrow">Bank Rakyat · High performing teams</div>
+  <h1>Lencioni and Hackman Diagnostic</h1>
+  <p class="lead">A live reading of how this team sees itself.</p>
+  <div class="card">
+    <h3>Facilitator</h3>
+    <p class="lead" style="margin:6px 0 12px">Choose a short session code, then put the results screen on the projector.</p>
+    <input type="text" id="code" placeholder="e.g. br-diag" maxlength="24" autocapitalize="off" autocomplete="off" spellcheck="false">
+    <div style="height:10px"></div>
+    <button class="btn primary" id="goFac">Open the results screen</button>
+    <div class="msg err" id="entryMsg"></div>
+  </div>
+</div>
+
+<div id="vPart" class="wrap hide">
+  <div class="eyebrow">Bank Rakyat · High performing teams</div>
+  <h1>Lencioni and Hackman Diagnostic</h1>
+  <p class="lead">Everyone rates the same thing: this team as a whole. There are no right answers. Your answers are anonymous, and only the picture of the whole team is shown. It takes about ten minutes.</p>
+  <div class="sticky" id="prog">0 of 25 answered</div>
+  <div id="form"></div>
+  <button class="btn primary" id="submit" disabled>Submit</button>
+  <div class="msg" id="partMsg"></div>
+</div>
+
+<div id="vDone" class="wrap hide">
+  <div class="done card"><h2>Thank you</h2><p class="lead" style="margin:0">Your answers are in. Please wait for the results on the screen.</p></div>
+  <button class="btn ghost" id="again" style="width:100%">Answer again</button>
+</div>
+
+<div id="vFac" class="wrap wide hide">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Bank Rakyat · High performing teams</div>
+      <h1>Lencioni and Hackman Diagnostic</h1>
+      <div class="bar"><span><span class="n" id="n">0</span> responses</span><span id="sess"></span><span id="conn">Connecting...</span></div>
+    </div>
+    <div class="qrbox"><div id="qr"></div>
+      <div class="t"><b>Scan to answer</b><br>About ten minutes. Anonymous.<br><span id="url" style="word-break:break-all"></span></div></div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+  <div class="bar" style="margin-top:18px"><button class="btn ghost" id="reset">Reset session</button>
+    <span>The shaded bar is the range, the blue line is the average. Keys 1 to 5 switch views.</span></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(function(){
+"use strict";
+var firebaseConfig = {
+  apiKey: "AIzaSyDUrJVDf3znSrtQa15CYYOBMeLllouG4Jk",
+  authDomain: "wargaming-bc98f.firebaseapp.com",
+  databaseURL: "https://wargaming-bc98f-default-rtdb.firebaseio.com",
+  projectId: "wargaming-bc98f",
+  storageBucket: "wargaming-bc98f.firebasestorage.app",
+  messagingSenderId: "377399570906",
+  appId: "1:377399570906:web:89bde9317994cbf77890e3"
+};
+var PATH_ROOT='sessions';
+
+/* ---- instruments ---- */
+var DYS=["Trust","Conflict","Commitment","Accountability","Results"];
+var DYS_SUB={Trust:"freedom to be vulnerable",Conflict:"willingness to debate openly",Commitment:"clarity and buy-in on decisions",Accountability:"holding one another to standards",Results:"collective over individual wins"};
+var LENC=[
+ ["Conflict","Team members are passionate and unguarded in their discussion of issues."],
+ ["Accountability","Team members call out one another's deficiencies or unproductive behaviours."],
+ ["Commitment","Team members know what their peers are working on and how they contribute to the collective good of the team."],
+ ["Trust","Team members quickly and genuinely apologise to one another when they say or do something damaging to the team."],
+ ["Results","Team members willingly make sacrifices in their own areas for the good of the team."],
+ ["Trust","Team members openly admit their weaknesses and mistakes."],
+ ["Conflict","Team meetings are compelling, and not boring."],
+ ["Commitment","Team members leave meetings confident that their peers are committed to the decisions agreed, even if there was initial disagreement."],
+ ["Results","Morale is significantly affected by the failure to achieve team goals."],
+ ["Conflict","During meetings, the most important and difficult issues are put on the table to be resolved."],
+ ["Accountability","Team members are deeply concerned about the prospect of letting down their peers."],
+ ["Trust","Team members know one another's personal lives and are comfortable discussing them."],
+ ["Commitment","Team members end discussions with clear and specific resolutions and calls to action."],
+ ["Accountability","Team members challenge one another about their plans and approaches."],
+ ["Results","Team members are slow to seek credit for their own contributions, but quick to point out those of others."]
+];
+var LSCALE=[["1","Never"],["2","Rarely"],["3","Sometimes"],["4","Often"],["5","Always"]];
+var COND=[
+ ["A real team","We function as a genuine team, not a group of people who happen to share a boss."],
+ ["A compelling direction","We share a clear, meaningful purpose that pulls us forward."],
+ ["The right people","The mix of skills and perspectives on this team matches what the work requires."],
+ ["A sound structure","Our roles, decision rights and ways of working are clear and fit the work."],
+ ["A supportive context","The bank's information, resources and rewards back us as a team, and not only as individuals."],
+ ["Expert coaching","We get help to work well together at the right moments, and not only when something has gone wrong."]
+];
+var HOLD=[
+ "In periods of uncertainty, this team keeps its attention on the customer and the plan.",
+ "When we do not know something that affects our people, we say so plainly and say when we will know more.",
+ "We make the decisions that cannot wait and do not postpone every hard one until things are settled.",
+ "I would tell this team about a problem in my area even if it reflected badly on me."
+];
+var ASCALE=[["1","Strongly disagree"],["2","Disagree"],["3","Neutral"],["4","Agree"],["5","Strongly agree"]];
+var OPEN=[
+ "What is the one thing that most limits the performance of this team today?",
+ "If this team changed one thing in how it works together over the next six months, what would make the biggest difference to the bank's performance?"
+];
+var NQ=LENC.length+COND.length+HOLD.length; /* 25 */
+
+function $(id){return document.getElementById(id)}
+function show(id){['vEntry','vPart','vDone','vFac'].forEach(function(v){$(v).classList.toggle('hide',v!==id)})}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function clean(s){return String(s||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,24)}
+function qs(k){var m=new RegExp('[?&]'+k+'=([^&#]*)').exec(location.search);return m?decodeURIComponent(m[1]):''}
+function base(){return location.origin+location.pathname}
+
+var db=null, signedIn=null;
+try{ firebase.initializeApp(firebaseConfig); db=firebase.database(); signedIn=firebase.auth().signInAnonymously(); }catch(e){console.error(e)}
+function refFor(code){return db.ref(PATH_ROOT+'/'+code+'/responses')}
+
+
+$('goFac').onclick=function(){var c=clean($('code').value); if(c.length<2){$('entryMsg').textContent='Use at least two letters or numbers.';return;} location.href=base()+'?s='+c+'&mode=facilitator';};
+$('code').addEventListener('keydown',function(e){if(e.key==='Enter')$('goFac').click()});
+
+/* ---------- participant ---------- */
+function startPart(code){
+  show('vPart');
+  var L=new Array(LENC.length).fill(null), C=new Array(COND.length).fill(null), H=new Array(HOLD.length).fill(null);
+  var html='';
+  function btns(group,i,scale){
+    var h='<div class="opts" data-g="'+group+'" data-i="'+i+'">';
+    scale.forEach(function(s){h+='<button type="button" class="opt" data-v="'+s[0]+'"><b>'+s[0]+'</b><span>'+s[1]+'</span></button>'});
+    return h+'</div>';
+  }
+  html+='<div class="part"><h2>Part 1: How the team behaves</h2><p>How often is each of these true of this team?</p></div>';
+  LENC.forEach(function(it,i){html+='<div class="card"><p class="q">'+(i+1)+'. '+esc(it[1])+'</p>'+btns('L',i,LSCALE)+'</div>'});
+  html+='<div class="part"><h2>Part 2: What makes the team effective</h2><p>Drag each slider from 1 to 10. How true is each statement of this team today?</p></div>';
+  COND.forEach(function(it,i){html+='<div class="card"><p class="q">'+(i+16)+'. '+esc(it[1])+'</p><div class="row"><input type="range" min="1" max="10" step="1" value="5" class="untouched" data-c="'+i+'" aria-label="'+esc(it[1])+'"><div class="val off" id="cv'+i+'">Drag</div></div><div class="poles"><span>1 · Not at all true</span><span>Completely true · 10</span></div></div>'});
+  html+='<div class="part"><h2>Part 3: Through the months ahead</h2><p>How far do you agree with each statement about this team?</p></div>';
+  HOLD.forEach(function(t,i){html+='<div class="card"><p class="q">'+(i+22)+'. '+esc(t)+'</p>'+btns('H',i,ASCALE)+'</div>'});
+  html+='<div class="part"><h2>Part 4: In your own words</h2><p>Optional. Please do not include names or anything that would identify you.</p></div>';
+  OPEN.forEach(function(q,i){html+='<div class="card"><p class="q">'+esc(q)+'</p><textarea id="o'+i+'" maxlength="600"></textarea></div>'});
+  $('form').innerHTML=html;
+  function count(){var n=0;L.concat(C,H).forEach(function(v){if(v!=null)n++});return n}
+  function upd(){var n=count();$('prog').textContent=n+' of '+NQ+' answered';$('submit').disabled=n<NQ;$('partMsg').textContent=n<NQ?'Answer all '+NQ+' rating questions to submit. The written answers are optional.':'';$('partMsg').className='msg'}
+  $('form').addEventListener('click',function(e){
+    var b=e.target.closest('.opt'); if(!b) return;
+    var g=b.parentNode, grp=g.getAttribute('data-g'), i=+g.getAttribute('data-i'), v=+b.getAttribute('data-v');
+    Array.prototype.forEach.call(g.children,function(c){c.classList.remove('on')}); b.classList.add('on');
+    (grp==='L'?L:H)[i]=v; upd();
+  });
+  Array.prototype.forEach.call($('form').querySelectorAll('input[type=range]'),function(inp){
+    function on(){var i=+inp.getAttribute('data-c'); C[i]=+inp.value; inp.classList.remove('untouched'); var v=$('cv'+i); v.classList.remove('off'); v.textContent=inp.value; upd();}
+    inp.addEventListener('input',on); inp.addEventListener('change',on);
+  });
+  var key='lhd_done_'+code;
+  try{ if(localStorage.getItem(key)==='1') show('vDone'); }catch(e){}
+  $('again').onclick=function(){try{localStorage.removeItem(key)}catch(e){} location.reload();};
+  upd();
+  $('submit').onclick=function(){
+    var data={L:L,C:C,H:H,ts:Date.now()};
+    var o1=$('o0').value.trim(), o2=$('o1').value.trim(); if(o1)data.o1=o1; if(o2)data.o2=o2;
+    $('submit').disabled=true; $('partMsg').textContent='Sending...'; $('partMsg').className='msg';
+    Promise.resolve(signedIn).then(function(){return refFor(code).push(data)}).then(function(){
+      try{localStorage.setItem(key,'1')}catch(e){} show('vDone');
+    }).catch(function(e){
+      $('partMsg').textContent='Could not send ('+(e&&e.code?e.code:'error')+'). Check your connection and try again.'; $('partMsg').className='msg err'; $('submit').disabled=false;
+    });
+  };
+}
+
+/* ---------- facilitator ---------- */
+var rows=[], viewIdx=0;
+var VIEWS=[
+ {k:'The five layers', f:vLayers},
+ {k:'Six conditions', f:vConds},
+ {k:'Through the months ahead', f:vHold},
+ {k:'Most divided', f:vDivided},
+ {k:'In their own words', f:vWords}
+];
+function stats(vals){var n=vals.length;if(!n)return null;var s=0,mn=1e9,mx=-1e9;vals.forEach(function(v){s+=v;if(v<mn)mn=v;if(v>mx)mx=v});return{n:n,mean:s/n,min:mn,max:mx}}
+function sd(vals){var n=vals.length;if(n<2)return 0;var m=vals.reduce(function(a,b){return a+b},0)/n;return Math.sqrt(vals.reduce(function(a,b){return a+(b-m)*(b-m)},0)/n)}
+function pos(v,lo,hi){return ((v-lo)/(hi-lo)*100)+'%'}
+function track(st,lo,hi){
+  var t='<div class="track"><div class="base"></div>';
+  for(var i=lo;i<=hi;i++)t+='<div class="tick" style="left:'+pos(i,lo,hi)+'"></div>';
+  if(st){t+='<div class="range" style="left:'+pos(st.min,lo,hi)+';width:calc('+pos(st.max,lo,hi)+' - '+pos(st.min,lo,hi)+')"></div><div class="mean" style="left:'+pos(st.mean,lo,hi)+'"></div>'}
+  return t+'</div>';
+}
+function nums(st){return '<div class="num">Average<b>'+(st?st.mean.toFixed(1):'-')+'</b></div><div class="num">Range<b>'+(st?(st.min===st.max?(+st.min).toFixed(st.min%1?1:0):(+st.min).toFixed(st.min%1?1:0)+' to '+(+st.max).toFixed(st.max%1?1:0)):'-')+'</b></div>'}
+function row(label,sub,st,lo,hi){return '<div class="m"><div class="lab">'+esc(label)+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>'+track(st,lo,hi)+nums(st)+'</div>'}
+function respDys(r,d){var v=[];LENC.forEach(function(it,i){if(it[0]===d&&r.L&&typeof r.L[i]==='number')v.push(r.L[i])});return v.length?v.reduce(function(a,b){return a+b},0)/v.length:null}
+function vLayers(){
+  var o='<div class="panel"><h2>The five layers</h2><div class="note">Read upward from trust. Each person’s score for a layer is the average of their three answers. Scale 1 (never) to 5 (always).</div>';
+  DYS.slice().reverse().forEach(function(d){
+    var v=rows.map(function(r){return respDys(r,d)}).filter(function(x){return x!=null});
+    o+=row(d,DYS_SUB[d],stats(v),1,5);
+  });
+  return o+'</div>';
+}
+function vConds(){
+  var o='<div class="panel"><h2>Six conditions of an effective team</h2><div class="note">The first three are the essentials, the last three the enablers. Scale 1 to 10.</div>';
+  COND.forEach(function(c,i){
+    var v=rows.map(function(r){return r.C&&typeof r.C[i]==='number'?r.C[i]:null}).filter(function(x){return x!=null});
+    o+=row((i+1)+'. '+c[0],c[1],stats(v),1,10);
+  });
+  return o+'</div>';
+}
+function vHold(){
+  var o='<div class="panel"><h2>Through the months ahead</h2><div class="note">Scale 1 (strongly disagree) to 5 (strongly agree).</div>';
+  HOLD.forEach(function(t,i){
+    var v=rows.map(function(r){return r.H&&typeof r.H[i]==='number'?r.H[i]:null}).filter(function(x){return x!=null});
+    o+=row('Statement '+(i+1),t,stats(v),1,5);
+  });
+  return o+'</div>';
+}
+function vDivided(){
+  var items=[];
+  LENC.forEach(function(it,i){var v=rows.map(function(r){return r.L&&typeof r.L[i]==='number'?r.L[i]:null}).filter(function(x){return x!=null});items.push({t:it[1],tag:it[0],v:v,lo:1,hi:5})});
+  COND.forEach(function(c,i){var v=rows.map(function(r){return r.C&&typeof r.C[i]==='number'?r.C[i]:null}).filter(function(x){return x!=null});items.push({t:c[1],tag:c[0],v:v,lo:1,hi:10,norm:9/4})});
+  HOLD.forEach(function(t,i){var v=rows.map(function(r){return r.H&&typeof r.H[i]==='number'?r.H[i]:null}).filter(function(x){return x!=null});items.push({t:t,tag:'Months ahead',v:v,lo:1,hi:5})});
+  items.forEach(function(x){x.sd=sd(x.v)/(x.norm||1)});
+  items=items.filter(function(x){return x.v.length>=3}).sort(function(a,b){return b.sd-a.sd}).slice(0,6);
+  var o='<div class="panel"><h2>Most divided</h2><div class="note">The statements where this team disagrees most with itself. These are the ones worth talking about.</div>';
+  if(!items.length)o+='<div class="note">Waiting for at least three responses.</div>';
+  items.forEach(function(x){var st=stats(x.v);o+='<div class="divd"><div class="lab" style="font-weight:700;font-size:16px;line-height:1.3">'+esc(x.t)+'<small style="display:block;font-weight:400;color:#5B6F84;font-size:12px;margin-top:2px">'+esc(x.tag)+'</small></div>'+track(st,x.lo,x.hi)+'<div class="num">Range<b>'+st.min+' to '+st.max+'</b></div></div>'});
+  return o+'</div>';
+}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+var wordsCache=null;
+function vWords(){
+  var o='<div class="panel"><h2>In their own words</h2><div class="note">Shown in random order. Group them into themes and quote only what could not identify its author.</div>';
+  ['o1','o2'].forEach(function(k,qi){
+    var a=rows.map(function(r){return r[k]}).filter(function(x){return x});
+    o+='<h3 style="margin-top:14px;font-size:18px">'+esc(OPEN[qi])+'</h3>';
+    if(!a.length)o+='<div class="note">No written answers yet.</div>';
+    shuffle(a).forEach(function(t){o+='<div class="ans">'+esc(t)+'</div>'});
+  });
+  return o+'</div>';
+}
+function paint(){
+  $('n').textContent=rows.length;
+  $('tabs').innerHTML=VIEWS.map(function(v,i){return '<button class="tab'+(i===viewIdx?' on':'')+'" data-i="'+i+'">'+(i+1)+'. '+v.k+'</button>'}).join('');
+  $('view').innerHTML=VIEWS[viewIdx].f();
+}
+function startFac(code){
+  show('vFac');
+  var url=base()+'?s='+code;
+  $('url').textContent=url.replace(/^https?:\/\//,'');
+  $('sess').textContent='Session: '+code;
+  try{var q=qrcode(0,'M');q.addData(url);q.make();$('qr').innerHTML=q.createSvgTag({cellSize:4,margin:2,scalable:true});}catch(e){}
+  $('tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b){viewIdx=+b.getAttribute('data-i');paint()}});
+  document.addEventListener('keydown',function(e){var n=parseInt(e.key,10);if(n>=1&&n<=VIEWS.length){viewIdx=n-1;paint()}});
+  paint();
+  Promise.resolve(signedIn).then(function(){
+    $('conn').textContent='Live';
+    refFor(code).on('value',function(snap){var v=snap.val()||{};rows=Object.keys(v).map(function(k){return v[k]});paint()},
+      function(e){$('conn').textContent='Cannot read ('+(e&&e.code?e.code:'error')+')';$('conn').className='err'});
+  }).catch(function(e){$('conn').textContent='Sign-in failed ('+(e&&e.code?e.code:'error')+')';$('conn').className='err'});
+  $('reset').onclick=function(){if(!confirm('Clear all responses for session "'+code+'"?'))return;refFor(code).remove().catch(function(e){alert('Could not reset ('+(e&&e.code?e.code:'error')+')')})};
+}
+var session=clean(qs('s')), mode=qs('mode');
+if(session && mode==='facilitator') startFac(session);
+else if(session) startPart(session);
+else show('vEntry');
+})();
+</script>
+</body>
+</html>
